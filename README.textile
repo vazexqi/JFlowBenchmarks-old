@@ -1,0 +1,4 @@
+h2. JFlow Benchmarks
+
+This repository contains several open source flow-based applications written in Java that we have parallelized.
+
