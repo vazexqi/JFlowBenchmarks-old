@@ -9,8 +9,7 @@ All of the projects have corresponding Eclipse projects that can be easily
 imported into Eclipse Juno (or later) for development. When coding with Eclipse,
 please use the included code formatter (from Eclipse JDT) in the "Coding
 conventions" folder. For more information on using the custom code formatter,
-refer to this
-"guide":http://help.eclipse.org/juno/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/codestyle/ref-preferences-formatter.htm
+refer to this "guide":http://help.eclipse.org/juno/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/codestyle/ref-preferences-formatter.htm.
 
 h2. The benchmarks
 
