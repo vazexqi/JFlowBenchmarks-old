@@ -1,4 +1,19 @@
-h2. JFlow Benchmarks
+h1. JFlow Benchmarks
 
-This repository contains several open source flow-based applications written in Java that we have parallelized.
+This repository contains several open source flow-based applications written in
+Java that we have parallelized.
 
+h2. Getting started with development
+
+All of the projects have corresponding Eclipse projects that can be easily
+imported into Eclipse Juno (or later) for development. When coding with Eclipse,
+please use the included code formatter (from Eclipse JDT) in the "Coding
+conventions" folder. For more information on using the custom code formatter,
+refer to this
+"guide":http://help.eclipse.org/juno/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/codestyle/ref-preferences-formatter.htm
+
+h2. The benchmarks
+
+h4. bzip2
+
+Taken from the "Apache Common Compress":http://commons.apache.org/compress/ project.

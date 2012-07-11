@@ -1,2 +1,3 @@
 .metadata
-bzip2/bin
+*.class
+bzip2/target
