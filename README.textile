@@ -15,4 +15,18 @@ h2. The benchmarks
 
 h4. bzip2
 
+Java implementation of the bzip2 algorithm.
+
 Taken from the "Apache Common Compress":http://commons.apache.org/compress/ project.
+
+h4. jbzip2
+
+Another Java implementation of the bzip2 algorithm -- writen with simplicity in mind.
+
+Taken from "jbzip2":http://code.google.com/p/jbzip2/
+
+h4. jlayer
+
+MP3 Library for the Java Platform.
+
+Taken from "jlayer":http://www.javazoom.net/javalayer/javalayer.html
