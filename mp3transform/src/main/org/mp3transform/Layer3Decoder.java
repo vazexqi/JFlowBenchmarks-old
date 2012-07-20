@@ -223,34 +223,52 @@ final class Layer3Decoder {
 			}
 			stereo(gr);
 			for (int ch= firstChannel; ch <= lastChannel; ch++) {
-				reorder(ch == 0 ? lr0 : lr1, ch, gr);
-				antialias(ch, gr);
-				hybrid(ch, gr);
-				for (int sb18= 18; sb18 < 576; sb18+= 36) {
-					// Frequency inversion
-					for (int ss= 1; ss < SSLIMIT; ss+= 2) {
-						out1d[ch][sb18 + ss]= -out1d[ch][sb18 + ss];
-					}
+				new PCMCalculator(ch, gr).run();
+			}
+		}
+	}
+
+	class PCMCalculator implements Runnable {
+
+		private final int channel;
+
+		private final int granule;
+
+		PCMCalculator(int channel, int granule) {
+			this.channel= channel;
+			this.granule= granule;
+		}
+
+		@Override
+		public void run() {
+			reorder(channel == 0 ? lr0 : lr1, channel, granule);
+			antialias(channel, granule);
+			hybrid(channel, granule);
+			for (int sb18= 18; sb18 < 576; sb18+= 36) {
+				// Frequency inversion
+				for (int ss= 1; ss < SSLIMIT; ss+= 2) {
+					out1d[channel][sb18 + ss]= -out1d[channel][sb18 + ss];
 				}
-				if (ch == 0) {
-					for (int ss= 0; ss < SSLIMIT; ss++) {
-						// Polyphase synthesis
-						for (int sb18= 0, sb= 0; sb18 < 576; sb18+= 18, sb++) {
-							samples1[sb]= out1d[ch][sb18 + ss];
-						}
-						filter1.calculatePcmSamples(samples1, player);
+			}
+			if (channel == 0) {
+				for (int ss= 0; ss < SSLIMIT; ss++) {
+					// Polyphase synthesis
+					for (int sb18= 0, sb= 0; sb18 < 576; sb18+= 18, sb++) {
+						samples1[sb]= out1d[channel][sb18 + ss];
 					}
-				} else {
-					for (int ss= 0; ss < SSLIMIT; ss++) {
-						// Polyphase synthesis
-						for (int sb18= 0, sb= 0; sb18 < 576; sb18+= 18, sb++) {
-							samples2[sb]= out1d[ch][sb18 + ss];
-						}
-						filter2.calculatePcmSamples(samples2, player);
+					filter1.calculatePcmSamples(samples1, player);
+				}
+			} else {
+				for (int ss= 0; ss < SSLIMIT; ss++) {
+					// Polyphase synthesis
+					for (int sb18= 0, sb= 0; sb18 < 576; sb18+= 18, sb++) {
+						samples2[sb]= out1d[channel][sb18 + ss];
 					}
+					filter2.calculatePcmSamples(samples2, player);
 				}
 			}
 		}
+
 	}
 
 	/**
