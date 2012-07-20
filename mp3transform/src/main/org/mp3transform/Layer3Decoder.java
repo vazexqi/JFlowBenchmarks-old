@@ -34,6 +34,10 @@
 package org.mp3transform;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 
 import org.mp3transform.Constants.SBI;
 
@@ -153,9 +157,7 @@ final class Layer3Decoder {
 
 	private final double[] isRatio= new double[576];
 
-	private final double[] tsOutCopy= new double[18];
-
-	private final double[] rawout= new double[36];
+	private final double[][] tsOutCopy= new double[2][18];
 
 	// subband samples are buffered and passed to the
 	// SynthesisFilter in one go.
@@ -166,6 +168,8 @@ final class Layer3Decoder {
 	private final int[] newSlen= new int[4];
 
 	int x, y, v, w;
+
+	private final ExecutorCompletionService executorService;
 
 	public Layer3Decoder(Bitstream stream, Header header, SynthesisFilter filter1, SynthesisFilter filter2,
 			Decoder player) {
@@ -184,6 +188,7 @@ final class Layer3Decoder {
 			lastChannel= 1;
 		}
 		nonzero[0]= nonzero[1]= 576;
+		executorService= new ExecutorCompletionService(Executors.newCachedThreadPool());
 	}
 
 	public void decodeFrame() throws IOException {
@@ -222,13 +227,21 @@ final class Layer3Decoder {
 				dequantizeSample(ch == 0 ? ro0 : ro1, ch, gr);
 			}
 			stereo(gr);
+
 			for (int ch= firstChannel; ch <= lastChannel; ch++) {
-				new PCMCalculator(ch, gr).run();
+				executorService.submit(new PCMCalculator(ch, gr));
+			}
+			for (int ch= firstChannel; ch <= lastChannel; ch++) {
+				try {
+					executorService.take().get();
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
-	class PCMCalculator implements Runnable {
+	class PCMCalculator implements Callable<Void> {
 
 		private final int channel;
 
@@ -240,10 +253,10 @@ final class Layer3Decoder {
 		}
 
 		@Override
-		public void run() {
+		public Void call() throws Exception {
 			reorder(channel == 0 ? lr0 : lr1, channel, granule);
 			antialias(channel, granule);
-			hybrid(channel, granule);
+			hybrid(channel, granule); // How can we fix this?
 			for (int sb18= 18; sb18 < 576; sb18+= 36) {
 				// Frequency inversion
 				for (int ss= 1; ss < SSLIMIT; ss+= 2) {
@@ -267,6 +280,8 @@ final class Layer3Decoder {
 					filter2.calculatePcmSamples(samples2, player);
 				}
 			}
+
+			return null;
 		}
 
 	}
@@ -1144,13 +1159,13 @@ final class Layer3Decoder {
 		for (int sb18= 0; sb18 < 576; sb18+= 18) {
 			int bt= (gi.windowSwitching && gi.mixedBlock && (sb18 < 36)) ? 0 : gi.blockType;
 			double[] tsOut= out1d[ch];
-			double[] r= rawout;
+			double[] r= new double[36];
 			for (int cc= 0; cc < 18; cc++) {
-				tsOutCopy[cc]= tsOut[cc + sb18];
+				tsOutCopy[ch][cc]= tsOut[cc + sb18];
 			}
-			fastInvMdct(tsOutCopy, r, bt);
+			fastInvMdct(tsOutCopy[ch], r, bt);
 			for (int cc= 0; cc < 18; cc++) {
-				tsOut[cc + sb18]= tsOutCopy[cc];
+				tsOut[cc + sb18]= tsOutCopy[ch][cc];
 			}
 			// overlap addition
 			double[] p= prevBlock[ch];

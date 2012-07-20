@@ -11,19 +11,13 @@ import org.mp3transform.Header;
 
 public class Benchmark {
 
-	private static final String TRACK= "inputs/track0.mp3";
+	private static final String TRACK= "inputs/track5.mp3";
 
 	// TODO: Do repeated measurements
 	// TODO: Create Google Caliper measurement version
 
 	public static void main(String[] args) throws IOException {
-
-		long startDecode= System.currentTimeMillis();
-
 		decodeWithoutCRC();
-
-		long stopDecode= System.currentTimeMillis();
-		System.out.println((stopDecode - startDecode) + "ms");
 
 		if (shouldCRC()) {
 			decodeWithCRC();
@@ -36,10 +30,17 @@ public class Benchmark {
 		Decoder decoder= Decoder.createBenchmarkDecoder();
 		Header header;
 
+		long startDecode= System.currentTimeMillis();
+
 		while ((header= stream.readFrame()) != null) {
 			decoder.decodeFrame(header, stream);
 			stream.closeFrame();
 		}
+
+		long stopDecode= System.currentTimeMillis();
+		System.out.println((stopDecode - startDecode) + "ms");
+
+		stream.close();
 	}
 
 	private static void decodeWithCRC() throws IOException {
@@ -47,11 +48,18 @@ public class Benchmark {
 		Decoder decoder= Decoder.createBenchmarkDecoder();
 		Header header;
 		CRC32 crc= new CRC32();
+		long startDecode= System.currentTimeMillis();
+
 		while ((header= stream.readFrame()) != null) {
 			updateCRC32(crc, decoder.decodeFrame(header, stream));
 			stream.closeFrame();
 		}
+
+		long stopDecode= System.currentTimeMillis();
+
+		System.out.println((stopDecode - startDecode) + "ms");
 		System.out.println("CRC: " + crc.getValue());
+
 		stream.close();
 	}
 
@@ -60,7 +68,7 @@ public class Benchmark {
 	}
 
 	private static boolean shouldCRC() {
-		return true;
+		return false;
 	}
 
 }
