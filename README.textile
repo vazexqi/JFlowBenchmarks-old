@@ -1,32 +1,33 @@
 h1. JFlow Benchmarks
 
-This repository contains several open source flow-based applications written in
-Java that we have parallelized.
+This repository contains several open source flow-based applications written in Java that we have parallelized.
 
 h2. Getting started with development
 
-All of the projects have corresponding Eclipse projects that can be easily
-imported into Eclipse Juno (or later) for development. When coding with Eclipse,
-please use the included code formatter (from Eclipse JDT) in the "Coding
-conventions" folder. For more information on using the custom code formatter,
-refer to this "guide":http://help.eclipse.org/juno/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/codestyle/ref-preferences-formatter.htm.
+All of the projects have corresponding Eclipse projects that can be easily imported into Eclipse Juno (or later) for development. When coding with Eclipse, please use the included code formatter (from Eclipse JDT) in the "Coding conventions" folder. For more information on using the custom code formatter, refer to this "guide":http://help.eclipse.org/juno/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/codestyle/ref-preferences-formatter.htm.
 
 h2. The benchmarks
 
 h4. bzip2
 
-Java implementation of the bzip2 algorithm.
+Java implementation of the bzip2 algorithm. This version is used as a reference since it is more complete and has been tested more.
 
 Taken from the "Apache Common Compress":http://commons.apache.org/compress/ project.
 
 h4. jbzip2
 
-Another Java implementation of the bzip2 algorithm -- writen with simplicity in mind.
+Another Java implementation of the bzip2 algorithm -- writen with simplicity in mind. This version will be parallelized.
 
 Taken from "jbzip2":http://code.google.com/p/jbzip2/
 
 h4. jlayer
 
-MP3 Library for the Java Platform.
+MP3 Library for the Java Platform. This version is used as a refernce since it is more complete and has been included in SPECJVM2008.
 
 Taken from "jlayer":http://www.javazoom.net/javalayer/javalayer.html
+
+h4. mp3transform
+
+Another MP3 library for the Java platform based on jlayer but refactored/simplified. It only handles MP3, i.e., MPEG-Layer III and not Layers I or II. This version will be parallelized.
+
+Taken from "mp3transform":http://code.google.com/p/mp3transform/
