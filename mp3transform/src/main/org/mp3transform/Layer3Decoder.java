@@ -111,7 +111,7 @@ final class Layer3Decoder {
 
 	private final double[][] lr1= new double[SBLIMIT][SSLIMIT];
 
-	private final double[] out1d= new double[SBLIMIT * SSLIMIT];
+	private final double[][] out1d= new double[2][SBLIMIT * SSLIMIT];
 
 	private final double[][] prevBlock= new double[2][SBLIMIT * SSLIMIT];
 
@@ -135,19 +135,19 @@ final class Layer3Decoder {
 
 	private final ScaleFactor[] scaleFactors= new ScaleFactor[] { new ScaleFactor(), new ScaleFactor() };
 
-	private int maxGr;
+	private final int maxGr;
 
 	private int frameStart;
 
 	private int part2Start;
 
-	private int channels;
+	private final int channels;
 
 	private int firstChannel;
 
 	private int lastChannel;
 
-	private int sfreq;
+	private final int sfreq;
 
 	private final int[] isPos= new int[576];
 
@@ -159,9 +159,9 @@ final class Layer3Decoder {
 
 	// subband samples are buffered and passed to the
 	// SynthesisFilter in one go.
-	private double[] samples1= new double[32];
+	private final double[] samples1= new double[32];
 
-	private double[] samples2= new double[32];
+	private final double[] samples2= new double[32];
 
 	private final int[] newSlen= new int[4];
 
@@ -229,14 +229,14 @@ final class Layer3Decoder {
 				for (int sb18= 18; sb18 < 576; sb18+= 36) {
 					// Frequency inversion
 					for (int ss= 1; ss < SSLIMIT; ss+= 2) {
-						out1d[sb18 + ss]= -out1d[sb18 + ss];
+						out1d[ch][sb18 + ss]= -out1d[ch][sb18 + ss];
 					}
 				}
 				if (ch == 0) {
 					for (int ss= 0; ss < SSLIMIT; ss++) {
 						// Polyphase synthesis
 						for (int sb18= 0, sb= 0; sb18 < 576; sb18+= 18, sb++) {
-							samples1[sb]= out1d[sb18 + ss];
+							samples1[sb]= out1d[ch][sb18 + ss];
 						}
 						filter1.calculatePcmSamples(samples1, player);
 					}
@@ -244,7 +244,7 @@ final class Layer3Decoder {
 					for (int ss= 0; ss < SSLIMIT; ss++) {
 						// Polyphase synthesis
 						for (int sb18= 0, sb= 0; sb18 < 576; sb18+= 18, sb++) {
-							samples2[sb]= out1d[sb18 + ss];
+							samples2[sb]= out1d[ch][sb18 + ss];
 						}
 						filter2.calculatePcmSamples(samples2, player);
 					}
@@ -796,14 +796,14 @@ final class Layer3Decoder {
 		GrInfo gi= si.ch[ch].gr[gr];
 		if (gi.windowSwitching && gi.blockType == 2) {
 			for (int index= 0; index < 576; index++) {
-				out1d[index]= 0.0f;
+				out1d[ch][index]= 0.0f;
 			}
 			if (gi.mixedBlock) {
 				// NO REORDER FOR LOW 2 SUBBANDS
 				for (int index= 0; index < 36; index++) {
 					int sb= index / SSLIMIT;
 					int ss= index - sb * SSLIMIT; // % SSLIMIT
-					out1d[index]= xr[sb][ss];
+					out1d[ch][index]= xr[sb][ss];
 				}
 				// REORDERING FOR REST SWITCHED SHORT
 				for (int sfb= 3; sfb < 13; sfb++) {
@@ -815,17 +815,17 @@ final class Layer3Decoder {
 						int desLine= sfbStart3 + freq3;
 						int sb= srcLine / SSLIMIT;
 						int ss= srcLine - sb * SSLIMIT; // % SSLIMIT
-						out1d[desLine]= xr[sb][ss];
+						out1d[ch][desLine]= xr[sb][ss];
 						srcLine+= sfbLines;
 						desLine++;
 						sb= srcLine / SSLIMIT;
 						ss= srcLine - sb * SSLIMIT; // % SSLIMIT
-						out1d[desLine]= xr[sb][ss];
+						out1d[ch][desLine]= xr[sb][ss];
 						srcLine+= sfbLines;
 						desLine++;
 						sb= srcLine / SSLIMIT;
 						ss= srcLine - sb * SSLIMIT; // % SSLIMIT
-						out1d[desLine]= xr[sb][ss];
+						out1d[ch][desLine]= xr[sb][ss];
 					}
 				}
 			} else {
@@ -835,14 +835,14 @@ final class Layer3Decoder {
 					int j= reorder[index];
 					int sb= j / SSLIMIT;
 					int ss= j - sb * SSLIMIT; // % SSLIMIT
-					out1d[index]= xr[sb][ss];
+					out1d[ch][index]= xr[sb][ss];
 				}
 			}
 		} else {
 			// long blocks
 			for (int i= 0, sb= 0; sb < SBLIMIT; sb++) {
 				for (int ss= 0; ss < SSLIMIT; ss++, i++) {
-					out1d[i]= xr[sb][ss];
+					out1d[ch][i]= xr[sb][ss];
 				}
 			}
 		}
@@ -1113,10 +1113,10 @@ final class Layer3Decoder {
 			for (ss= 0; ss < 8; ss++) {
 				int srcIdx1= sb18 + 17 - ss;
 				int srcIdx2= sb18 + 18 + ss;
-				double bu= out1d[srcIdx1];
-				double bd= out1d[srcIdx2];
-				out1d[srcIdx1]= (bu * Constants.CS[ss]) - (bd * Constants.CA[ss]);
-				out1d[srcIdx2]= (bd * Constants.CS[ss]) + (bu * Constants.CA[ss]);
+				double bu= out1d[ch][srcIdx1];
+				double bd= out1d[ch][srcIdx2];
+				out1d[ch][srcIdx1]= (bu * Constants.CS[ss]) - (bd * Constants.CA[ss]);
+				out1d[ch][srcIdx2]= (bd * Constants.CS[ss]) + (bu * Constants.CA[ss]);
 			}
 		}
 	}
@@ -1125,7 +1125,7 @@ final class Layer3Decoder {
 		GrInfo gi= si.ch[ch].gr[gr];
 		for (int sb18= 0; sb18 < 576; sb18+= 18) {
 			int bt= (gi.windowSwitching && gi.mixedBlock && (sb18 < 36)) ? 0 : gi.blockType;
-			double[] tsOut= out1d;
+			double[] tsOut= out1d[ch];
 			double[] r= rawout;
 			for (int cc= 0; cc < 18; cc++) {
 				tsOutCopy[cc]= tsOut[cc + sb18];
