@@ -86,6 +86,9 @@ public class BZip2BlockCompressor {
 	 */
 	private int rleLength = 0;
 
+    private static int totalBlocks =0;
+    public int myBlockNumber;
+
 
 	/**
 	 * Write the Huffman symbol to output byte map
@@ -248,11 +251,6 @@ public class BZip2BlockCompressor {
 		int bwtStartPointer = divSufSort.bwt();
 
 		// Write out the block header
-		this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
-		this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
-		this.bitOutputStream.writeInteger (this.crc.getCRC());
-		this.bitOutputStream.writeBoolean (false); // Randomised block flag. We never create randomised blocks
-		this.bitOutputStream.writeBits (24, bwtStartPointer);
 
 		// Write out the symbol map
 		writeSymbolMap();
@@ -263,12 +261,20 @@ public class BZip2BlockCompressor {
 
 		// Perform the Huffman Encoding stage and write out the encoded data
 		BZip2HuffmanStageEncoder huffmanEncoder = new BZip2HuffmanStageEncoder (this.bitOutputStream, mtfEncoder.getMtfBlock(), mtfEncoder.getMtfLength(), mtfEncoder.getMtfAlphabetSize(), mtfEncoder.getMtfSymbolFrequencies());
-		huffmanEncoder.encode();
+		huffmanEncoder.encode(this,bwtStartPointer);
 
 	}
 
+    public void writeHeader(int bwtStartPointer) throws IOException {
+        this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
+        this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
+        this.bitOutputStream.writeInteger (this.crc.getCRC());
+        this.bitOutputStream.writeBoolean (false); // Randomised block flag. We never create randomised blocks
+        this.bitOutputStream.writeBits(24, bwtStartPointer);
+    }
 
-	/**
+
+    /**
 	 * Determines if any bytes have been written to the block
 	 * @return {@code true} if one or more bytes has been written to the block, otherwise
 	 *         {@code false}
@@ -304,6 +310,9 @@ public class BZip2BlockCompressor {
 		this.block = new byte[blockSize + 1];
 		this.bwtBlock = new int[blockSize + 1];
 		this.blockLengthLimit = blockSize - 6; // 5 bytes for one RLE run plus one byte - see {@link #write(int)}
+        myBlockNumber= totalBlocks;
+        totalBlocks++;
+
 
 	}
 
