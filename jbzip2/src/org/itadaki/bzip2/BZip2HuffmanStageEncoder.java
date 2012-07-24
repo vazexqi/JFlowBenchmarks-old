@@ -383,7 +383,6 @@ class BZip2HuffmanStageEncoder {
                 }
             }
             // Write out the tables and the block data encoded with them
-            System.out.println(blockCompressor.blockNum+", "+expectedNum);
             blockCompressor.writeHeader(bwtStartPointer);
             writeSelectorsAndHuffmanTables();
             writeBlockData();

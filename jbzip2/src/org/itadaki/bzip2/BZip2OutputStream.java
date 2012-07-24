@@ -68,7 +68,7 @@ public class BZip2OutputStream extends OutputStream {
 
     private int totalBlockNum;
     private int expectedNum;
-
+    private ExecutorService executor;
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(int)
 	 */
@@ -107,8 +107,8 @@ public class BZip2OutputStream extends OutputStream {
 		}
 
 		int bytesWritten;
-        ExecutorService executor = Executors.newCachedThreadPool();
-        int quota = length / Runtime.getRuntime().availableProcessors();
+
+        int quota = length /(Runtime.getRuntime().availableProcessors()+1);
 
 		while (length > 0) {
 			if ((bytesWritten = this.blockCompressor.write (data, offset, (quota >length)? length: quota)) < length) {
@@ -118,12 +118,7 @@ public class BZip2OutputStream extends OutputStream {
 			offset += bytesWritten;
 			length -= bytesWritten;
 		}
-        executor.shutdown();
-        try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     }
 
     class BlockWrite implements Runnable{
@@ -151,6 +146,7 @@ public class BZip2OutputStream extends OutputStream {
 	public void close() throws IOException {
 
 		if (this.outputStream != null) {
+
 			finish();
 			this.outputStream.close();
 			this.outputStream = null;
@@ -158,7 +154,14 @@ public class BZip2OutputStream extends OutputStream {
 
 	}
 
-
+    public void shutDownExecutor(){
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 	/**
 	 * Initialises a new block for compression
 	 */
@@ -257,8 +260,9 @@ public class BZip2OutputStream extends OutputStream {
 		this.bitOutputStream.writeBits (16, BZip2Constants.STREAM_START_MARKER_1);
 		this.bitOutputStream.writeBits (8,  BZip2Constants.STREAM_START_MARKER_2);
 		this.bitOutputStream.writeBits (8, '0' + blockSizeMultiplier);
-        totalBlockNum = 0;
-        expectedNum = 0;
+        this.totalBlockNum = 0;
+        this.expectedNum = 0;
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()+1);
 		initialiseNextBlock();
 
 	}
