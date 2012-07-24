@@ -1,0 +1,9 @@
+apply plugin: 'java'
+defaultTasks 'runBenchmarks'
+
+
+task runBenchmarks(type: JavaExec, dependsOn:'classes') {
+    main = 'edu.illinois.jflow.benchmark.Benchmark'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
