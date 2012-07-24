@@ -76,6 +76,7 @@ class BZip2HuffmanStageEncoder {
 	 */
 	private final byte[] selectors;
 
+    private static volatile int expectedNum = 0;
 
 	/**
 	 * Selects an appropriate table count for a given MTF length
@@ -363,7 +364,7 @@ class BZip2HuffmanStageEncoder {
 	 * Encodes and writes the block data
 	 * @throws IOException on any I/O error writing the data
 	 */
-	public void encode() throws IOException {
+	public void encode(BZip2BlockCompressor blockCompressor, int bwtStartPointer) throws IOException {
 
 		// Create optimised selector list and Huffman tables
 		generateHuffmanOptimisationSeeds();
@@ -372,10 +373,23 @@ class BZip2HuffmanStageEncoder {
 		}
 		assignHuffmanCodeSymbols();
 
-		// Write out the tables and the block data encoded with them
-		writeSelectorsAndHuffmanTables();
-		writeBlockData();
+        synchronized (bitOutputStream){
 
+            while(expectedNum != blockCompressor.blockNum){
+                try {
+                    bitOutputStream.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            // Write out the tables and the block data encoded with them
+            System.out.println(blockCompressor.blockNum+", "+expectedNum);
+            blockCompressor.writeHeader(bwtStartPointer);
+            writeSelectorsAndHuffmanTables();
+            writeBlockData();
+            expectedNum++;
+            bitOutputStream.notifyAll();
+        }
 	}
 
 

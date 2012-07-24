@@ -18,7 +18,7 @@ public class Benchmark {
 	public static void main(String[] args) throws Exception {
 		final File dir= mkdir("dir");
 		final File inputFile= new File("inputs/media.dat");
-		final File outputFile= new File(dir, "media.compressed.bz2");
+		final File outputFile= new File("media.compressed.bz2");
 
 		InputStream fileInputStream= new BufferedInputStream(new FileInputStream(inputFile));
 		BufferedOutputStream bufferedOutputStream= new BufferedOutputStream(new FileOutputStream(outputFile));
