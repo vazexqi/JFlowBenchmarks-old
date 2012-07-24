@@ -415,5 +415,4 @@ class BZip2HuffmanStageEncoder {
 		this.selectors = new byte [(mtfLength + BZip2Constants.HUFFMAN_GROUP_RUN_LENGTH - 1) / BZip2Constants.HUFFMAN_GROUP_RUN_LENGTH];
 
 	}
-
 }

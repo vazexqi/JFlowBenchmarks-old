@@ -259,7 +259,6 @@ public class BZip2BlockCompressor {
 	}
 
     public void writeHeader(int bwtStartPointer) throws IOException {
-        // Write out the block header
         this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
         this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
         this.bitOutputStream.writeInteger (this.crc.getCRC());
@@ -269,7 +268,6 @@ public class BZip2BlockCompressor {
         // Write out the symbol map
         writeSymbolMap();
     }
-
 
     /**
 	 * Determines if any bytes have been written to the block
