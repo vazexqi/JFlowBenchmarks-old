@@ -58,7 +58,7 @@ public class CompressionWorker implements Worker {
 
             log.notifyMeasurementPhaseStarting();
 
-            for(int trials=0;trials<1;trials++){
+            for(int trials=0;trials<10;trials++){
                 int reps=targetReps;
                 if (options.gcBeforeEach) {
                     Util.forceGc();
