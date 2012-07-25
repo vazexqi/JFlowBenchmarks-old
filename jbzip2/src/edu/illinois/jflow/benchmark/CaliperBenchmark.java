@@ -23,32 +23,28 @@ public class CaliperBenchmark extends Benchmark {
         for (int i = 0; i < reps; i++) {
             final File inputFile = new File("inputs/media.dat");
             final File outputFile = new File("media.compressed.bz2");
-
             InputStream fileInputStream = new BufferedInputStream(new FileInputStream(inputFile));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
             BZip2OutputStream compressorStream = new BZip2OutputStream(bufferedOutputStream);
-
             // Compression - need to use buffered streams or the results will be too I/O intensive
             long startCompressed = System.currentTimeMillis();
 
             byte[] buffer = new byte[5242880];
             int bytesRead;
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                compressorStream.write(buffer, 0, bytesRead);
+                compressorStream.write(buffer, 0, bytesRead,numCores);
             }
             compressorStream.shutDownExecutor();
             long stopCompressed = System.currentTimeMillis();
             totalTime += stopCompressed - startCompressed;
             fileInputStream.close();
             compressorStream.close();
-
-
         }
         return totalTime;
     }
 
     public static void main(String[] args) throws Exception {
-        String[] throughputArg = {"-i", "compress"};
-        CaliperMain.main(CaliperBenchmark.class, throughputArg);
+        String[] compressArg = {"-i", "compress"};
+        CaliperMain.main(CaliperBenchmark.class, compressArg);
     }
 }

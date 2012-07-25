@@ -16,16 +16,10 @@ import java.util.Queue;
 public class CompressionWorker implements Worker {
     @Override
     public Collection<Measurement> measure(Benchmark benchmark, String methodName,Map<String, String> optionMap, WorkerEventLog log) throws Exception {
-        final int benchmarkReps=100;
         Options options = new Options(optionMap);
         Trial trial = new Trial(benchmark, methodName, options, log);
         trial.warmUp();
-        // TODO: make the minimum configurable, default to maybe 1000?
-        /*if (targetReps < 100) {
-            throw new Exception("Too few reps "+targetReps); // TODO: better exception
-
-        }       */
-        return trial.run(benchmarkReps);
+        return trial.run(10);
     }
 
     private static class Trial {
@@ -54,14 +48,6 @@ public class CompressionWorker implements Worker {
         }
 
         Collection<Measurement> run(int targetReps) throws Exception {
-            // Use a variety of rep counts for measurements, so that things like concavity and
-            // y-intercept might be observed later. Just cycle through them in order (why not?).
-            int[] repCounts = {
-                    // (int) (targetReps * 0.7),
-                    // (int) (targetReps * 0.9),
-                    (int) (targetReps * 1.1),
-                    (int) (targetReps * 1.3)
-            };
 
             long timeToStop = startTick + options.maxTotalRuntimeNanos - options.timingIntervalNanos;
 
@@ -72,22 +58,18 @@ public class CompressionWorker implements Worker {
 
             log.notifyMeasurementPhaseStarting();
 
-            //while (System.nanoTime() < timeToStop) {
             for(int trials=0;trials<1;trials++){
-                //int reps = repCounts[i++ % repCounts.length];
-                int reps=10;
+                int reps=targetReps;
                 if (options.gcBeforeEach) {
                     Util.forceGc();
                 }
                 log.notifyMeasurementStarting();
-                long nanos = invokeTimeMethod(reps);
-                double nanos_per_rep = nanos / reps;
-                double seconds = (double) nanos_per_rep / 1000000000;
+                long milli = invokeTimeMethod(reps);
 
                 Measurement m = new Measurement();
-                m.value = seconds;
+                m.value = milli;
                 m.weight = 1;
-                m.unit = "Seconds";
+                m.unit = "milli seconds";
                 m.description = "";
                 double nanosPerRep = m.value / m.weight;
                 log.notifyMeasurementEnding(nanosPerRep);
