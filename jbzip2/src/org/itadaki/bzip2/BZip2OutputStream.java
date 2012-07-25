@@ -24,9 +24,6 @@ package org.itadaki.bzip2;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -66,9 +63,7 @@ public class BZip2OutputStream extends OutputStream {
 	 */
 	private BZip2BlockCompressor blockCompressor;
 
-    private static int totalBlockNum =0;
-    private static int expectedNum =0;
-    private ExecutorService executor;
+
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(int)
 	 */
@@ -107,36 +102,16 @@ public class BZip2OutputStream extends OutputStream {
 		}
 
 		int bytesWritten;
-
-        int quota = length /(Runtime.getRuntime().availableProcessors()+1);
-
 		while (length > 0) {
-			if ((bytesWritten = this.blockCompressor.write (data, offset, (quota >length)? length: quota)) < length) {
-				executor.submit(new BlockWrite(blockCompressor));
+			if ((bytesWritten = this.blockCompressor.write (data, offset, length)) < length) {
+				closeBlock();
 				initialiseNextBlock();
 			}
 			offset += bytesWritten;
 			length -= bytesWritten;
 		}
 
-    }
-
-    class BlockWrite implements Runnable{
-
-        BZip2BlockCompressor blockCompressor;
-
-        BlockWrite(BZip2BlockCompressor blockCompressor){
-            this.blockCompressor = blockCompressor;
-        }
-        @Override
-        public void run() {
-            try {
-                closeBlock(blockCompressor);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	}
 
 
 	/* (non-Javadoc)
@@ -146,7 +121,6 @@ public class BZip2OutputStream extends OutputStream {
 	public void close() throws IOException {
 
 		if (this.outputStream != null) {
-
 			finish();
 			this.outputStream.close();
 			this.outputStream = null;
@@ -154,20 +128,13 @@ public class BZip2OutputStream extends OutputStream {
 
 	}
 
-    public void shutDownExecutor(){
-        executor.shutdown();
-        try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+
 	/**
 	 * Initialises a new block for compression
 	 */
 	private void initialiseNextBlock() {
 
-		this.blockCompressor = new BZip2BlockCompressor (this.bitOutputStream, this.streamBlockSize, totalBlockNum++);
+		this.blockCompressor = new BZip2BlockCompressor (this.bitOutputStream, this.streamBlockSize);
 
 	}
 
@@ -189,29 +156,7 @@ public class BZip2OutputStream extends OutputStream {
 
 	}
 
-    private void closeBlock(BZip2BlockCompressor blockCompressor) throws IOException {
 
-        if (blockCompressor.isEmpty()) {
-            return;
-        }
-
-        blockCompressor.close();
-        synchronized (outputStream){
-            while(expectedNum != blockCompressor.blockNum){
-                try {
-                    outputStream.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            int blockCRC = blockCompressor.getCRC();
-            this.streamCRC = ((this.streamCRC << 1) | (this.streamCRC >>> 31)) ^ blockCRC;
-            expectedNum++;
-            outputStream.notifyAll();
-        }
-
-
-    }
 	/**
 	 * Compresses and writes out any as yet unwritten data, then writes the end of the BZip2 stream.
 	 * The underlying OutputStream is not closed
@@ -222,7 +167,7 @@ public class BZip2OutputStream extends OutputStream {
 		if (!this.streamFinished) {
 			this.streamFinished = true;
 			try {
-				closeBlock(blockCompressor);
+				closeBlock();
 				this.bitOutputStream.writeBits (24, BZip2Constants.STREAM_END_MARKER_1);
 				this.bitOutputStream.writeBits (24, BZip2Constants.STREAM_END_MARKER_2);
 				this.bitOutputStream.writeInteger (this.streamCRC);
@@ -260,7 +205,7 @@ public class BZip2OutputStream extends OutputStream {
 		this.bitOutputStream.writeBits (16, BZip2Constants.STREAM_START_MARKER_1);
 		this.bitOutputStream.writeBits (8,  BZip2Constants.STREAM_START_MARKER_2);
 		this.bitOutputStream.writeBits (8, '0' + blockSizeMultiplier);
-        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()+1);
+
 		initialiseNextBlock();
 
 	}

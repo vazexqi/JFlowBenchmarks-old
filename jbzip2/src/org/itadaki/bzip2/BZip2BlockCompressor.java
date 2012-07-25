@@ -86,7 +86,6 @@ public class BZip2BlockCompressor {
 	 */
 	private int rleLength = 0;
 
-    public int blockNum;
 
 	/**
 	 * Write the Huffman symbol to output byte map
@@ -248,28 +247,28 @@ public class BZip2BlockCompressor {
 		BZip2DivSufSort divSufSort = new BZip2DivSufSort (this.block, this.bwtBlock, this.blockLength);
 		int bwtStartPointer = divSufSort.bwt();
 
-        // Perform the Move To Front Transform and Run-Length Encoding[2] stages
+		// Write out the block header
+		this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
+		this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
+		this.bitOutputStream.writeInteger (this.crc.getCRC());
+		this.bitOutputStream.writeBoolean (false); // Randomised block flag. We never create randomised blocks
+		this.bitOutputStream.writeBits (24, bwtStartPointer);
+
+		// Write out the symbol map
+		writeSymbolMap();
+
+		// Perform the Move To Front Transform and Run-Length Encoding[2] stages 
 		BZip2MTFAndRLE2StageEncoder mtfEncoder = new BZip2MTFAndRLE2StageEncoder (this.bwtBlock, this.blockLength, this.blockValuesPresent);
 		mtfEncoder.encode();
 
 		// Perform the Huffman Encoding stage and write out the encoded data
 		BZip2HuffmanStageEncoder huffmanEncoder = new BZip2HuffmanStageEncoder (this.bitOutputStream, mtfEncoder.getMtfBlock(), mtfEncoder.getMtfLength(), mtfEncoder.getMtfAlphabetSize(), mtfEncoder.getMtfSymbolFrequencies());
-		huffmanEncoder.encode(this, bwtStartPointer);
+		huffmanEncoder.encode();
 
 	}
 
-    public void writeHeader(int bwtStartPointer) throws IOException {
-        this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
-        this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
-        this.bitOutputStream.writeInteger (this.crc.getCRC());
-        this.bitOutputStream.writeBoolean (false); // Randomised block flag. We never create randomised blocks
-        this.bitOutputStream.writeBits (24, bwtStartPointer);
 
-        // Write out the symbol map
-        writeSymbolMap();
-    }
-
-    /**
+	/**
 	 * Determines if any bytes have been written to the block
 	 * @return {@code true} if one or more bytes has been written to the block, otherwise
 	 *         {@code false}
@@ -297,7 +296,7 @@ public class BZip2BlockCompressor {
 	 * @param blockSize The declared block size in bytes. Up to this many bytes will be accepted
 	 *                  into the block after Run-Length Encoding is applied
 	 */
-	public BZip2BlockCompressor (final BZip2BitOutputStream bitOutputStream, final int blockSize, final int blockNum) {
+	public BZip2BlockCompressor (final BZip2BitOutputStream bitOutputStream, final int blockSize) {
 
 		this.bitOutputStream = bitOutputStream;
 
@@ -305,7 +304,6 @@ public class BZip2BlockCompressor {
 		this.block = new byte[blockSize + 1];
 		this.bwtBlock = new int[blockSize + 1];
 		this.blockLengthLimit = blockSize - 6; // 5 bytes for one RLE run plus one byte - see {@link #write(int)}
-        this.blockNum = blockNum;
 
 	}
 
