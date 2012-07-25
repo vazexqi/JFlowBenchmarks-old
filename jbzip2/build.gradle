@@ -1,0 +1,23 @@
+apply plugin: 'java'
+defaultTasks 'runBenchmarks'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/edu'
+            srcDir 'src/org'
+        }
+    }
+
+}
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+
+
+task runBenchmarks(type: JavaExec, dependsOn: 'classes') {
+    main = 'edu.illinois.jflow.benchmark.Benchmark'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
