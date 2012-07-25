@@ -68,8 +68,8 @@ public class CompressionWorker implements Worker {
 
                 Measurement m = new Measurement();
                 m.value = milli;
-                m.weight = 1;
-                m.unit = "milli seconds";
+                m.weight = targetReps;
+                m.unit = "milliseconds";
                 m.description = "";
                 double nanosPerRep = m.value / m.weight;
                 log.notifyMeasurementEnding(nanosPerRep);
