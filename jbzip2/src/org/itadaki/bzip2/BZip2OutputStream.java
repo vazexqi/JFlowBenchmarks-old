@@ -66,8 +66,8 @@ public class BZip2OutputStream extends OutputStream {
 	 */
 	private BZip2BlockCompressor blockCompressor;
 
-    private int totalBlockNum;
-    private int expectedNum;
+    private static int totalBlockNum =0;
+    private static int expectedNum =0;
     private ExecutorService executor;
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(int)
@@ -260,8 +260,6 @@ public class BZip2OutputStream extends OutputStream {
 		this.bitOutputStream.writeBits (16, BZip2Constants.STREAM_START_MARKER_1);
 		this.bitOutputStream.writeBits (8,  BZip2Constants.STREAM_START_MARKER_2);
 		this.bitOutputStream.writeBits (8, '0' + blockSizeMultiplier);
-        this.totalBlockNum = 0;
-        this.expectedNum = 0;
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()+1);
 		initialiseNextBlock();
 
