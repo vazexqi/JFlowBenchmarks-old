@@ -17,12 +17,11 @@ public class CaliperBenchmark extends Benchmark {
     @VmParam({"-Xmx1024M"})
     String xmx;
 
-
     public long timeCompression(int reps) throws Exception {
         long totalTime = 0;
+        final File inputFile = new File("inputs/media.dat");
+        final File outputFile = new File("media.compressed.bz2");
         for (int i = 0; i < reps; i++) {
-            final File inputFile = new File("inputs/media.dat");
-            final File outputFile = new File("media.compressed.bz2");
             InputStream fileInputStream = new BufferedInputStream(new FileInputStream(inputFile));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
             BZip2OutputStream compressorStream = new BZip2OutputStream(bufferedOutputStream);
@@ -31,14 +30,16 @@ public class CaliperBenchmark extends Benchmark {
 
             byte[] buffer = new byte[5242880];
             int bytesRead;
+            compressorStream.setCores(numCores);
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                compressorStream.write(buffer, 0, bytesRead,numCores);
+                compressorStream.write(buffer, 0, bytesRead, numCores);
             }
             compressorStream.shutDownExecutor();
             long stopCompressed = System.currentTimeMillis();
             totalTime += stopCompressed - startCompressed;
             fileInputStream.close();
             compressorStream.close();
+
         }
         return totalTime;
     }
@@ -46,5 +47,6 @@ public class CaliperBenchmark extends Benchmark {
     public static void main(String[] args) throws Exception {
         String[] compressArg = {"-i", "compress"};
         CaliperMain.main(CaliperBenchmark.class, compressArg);
+
     }
 }

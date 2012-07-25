@@ -69,9 +69,11 @@ public class BZip2OutputStream extends OutputStream {
     private static int totalBlockNum=0;
     private static int expectedNum=0;
     private ExecutorService executor;
-	/* (non-Javadoc)
-	 * @see java.io.OutputStream#write(int)
-	 */
+    private int numCores=1;
+
+    /* (non-Javadoc)
+      * @see java.io.OutputStream#write(int)
+      */
 	@Override
 	public void write (final int value) throws IOException {
 
@@ -260,7 +262,6 @@ public class BZip2OutputStream extends OutputStream {
 		this.bitOutputStream.writeBits (8,  BZip2Constants.STREAM_START_MARKER_2);
 		this.bitOutputStream.writeBits (8, '0' + blockSizeMultiplier);
 
-        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()+1);
 		initialiseNextBlock();
 
 	}
@@ -276,4 +277,9 @@ public class BZip2OutputStream extends OutputStream {
 		this (outputStream, 9);
 
 	}
+    public void setCores(int numCores){
+        this.numCores=numCores;
+        this.executor = Executors.newFixedThreadPool(numCores);
+    }
+
 }

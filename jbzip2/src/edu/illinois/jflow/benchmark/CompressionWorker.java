@@ -15,7 +15,7 @@ import java.util.Queue;
 
 public class CompressionWorker implements Worker {
     @Override
-    public Collection<Measurement> measure(Benchmark benchmark, String methodName,Map<String, String> optionMap, WorkerEventLog log) throws Exception {
+    public Collection<Measurement> measure(Benchmark benchmark, String methodName, Map<String, String> optionMap, WorkerEventLog log) throws Exception {
         Options options = new Options(optionMap);
         Trial trial = new Trial(benchmark, methodName, options, log);
         trial.warmUp();
@@ -28,7 +28,7 @@ public class CompressionWorker implements Worker {
         final Options options;
         final WorkerEventLog log;
         final long startTick;
-        final int warmupReps=1;
+        final int warmupReps = 1;
 
         Trial(Benchmark benchmark, String methodName, Options options, WorkerEventLog log)
                 throws Exception {
@@ -58,8 +58,8 @@ public class CompressionWorker implements Worker {
 
             log.notifyMeasurementPhaseStarting();
 
-            for(int trials=0;trials<10;trials++){
-                int reps=targetReps;
+            for (int trials = 0; trials < 10; trials++) {
+                int reps = targetReps;
                 if (options.gcBeforeEach) {
                     Util.forceGc();
                 }
