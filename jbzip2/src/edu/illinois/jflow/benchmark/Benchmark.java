@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.itadaki.bzip2.BZip2OutputStream;
 
@@ -18,7 +20,7 @@ public class Benchmark {
 	public static void main(String[] args) throws Exception {
 		final File dir= mkdir("dir");
 		final File inputFile= new File("inputs/media.dat");
-		final File outputFile= new File(dir, "media.compressed.bz2");
+		final File outputFile= new File("media.compressed.bz2");
 
 		InputStream fileInputStream= new BufferedInputStream(new FileInputStream(inputFile));
 		BufferedOutputStream bufferedOutputStream= new BufferedOutputStream(new FileOutputStream(outputFile));
@@ -27,17 +29,18 @@ public class Benchmark {
 		// Compression - need to use buffered streams or the results will be too I/O intensive
 		long startCompressed= System.currentTimeMillis();
 
-		byte[] buffer= new byte[524288];
+		byte[] buffer= new byte[5242880];
 		int bytesRead;
 		while ((bytesRead= fileInputStream.read(buffer)) != -1) {
 			compressorStream.write(buffer, 0, bytesRead);
 		}
-
-		long stopCompressed= System.currentTimeMillis();
-		System.out.println((stopCompressed - startCompressed) + "ms");
+        compressorStream.shutDownExecutor();
+        long stopCompressed= System.currentTimeMillis();
+        System.out.println((stopCompressed - startCompressed) + "ms");
 
 		fileInputStream.close();
 		compressorStream.close();
+
 
 	}
 
