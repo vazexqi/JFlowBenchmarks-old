@@ -1,5 +1,5 @@
 apply plugin: 'java'
-defaultTasks 'runBenchmarks'
+defaultTasks 'compress'
 
 sourceSets {
     main {
@@ -16,8 +16,8 @@ dependencies {
 
 
 
-task runBenchmarks(type: JavaExec, dependsOn: 'classes') {
-    main = 'edu.illinois.jflow.benchmark.Benchmark'
+task compress(type: JavaExec, dependsOn: 'classes') {
+    main = 'edu.illinois.jflow.benchmark.CaliperBenchmark'
     classpath = sourceSets.main.runtimeClasspath
 }
 

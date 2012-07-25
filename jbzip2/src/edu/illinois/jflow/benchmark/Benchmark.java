@@ -1,16 +1,8 @@
 package edu.illinois.jflow.benchmark;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.itadaki.bzip2.BZip2OutputStream;
+
+import java.io.*;
 
 public class Benchmark {
 
@@ -18,7 +10,6 @@ public class Benchmark {
 	// TODO: Create Google Caliper measurement version
 
 	public static void main(String[] args) throws Exception {
-		final File dir= mkdir("dir");
 		final File inputFile= new File("inputs/media.dat");
 		final File outputFile= new File("media.compressed.bz2");
 

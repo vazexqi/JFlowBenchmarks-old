@@ -95,8 +95,7 @@ public class BZip2OutputStream extends OutputStream {
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(byte[], int, int)
 	 */
-	@Override
-	public void write (final byte[] data, int offset, int length) throws IOException {
+	public void write (final byte[] data, int offset, int length,int numCores) throws IOException {
 
 		if (this.outputStream == null) {
 			throw new BZip2Exception ("Stream closed");
@@ -108,7 +107,7 @@ public class BZip2OutputStream extends OutputStream {
 
 		int bytesWritten;
 
-        int quota = length /(Runtime.getRuntime().availableProcessors()+1);
+        int quota = length /(numCores+1);
 
 		while (length > 0) {
 			if ((bytesWritten = this.blockCompressor.write (data, offset, (quota >length)? length: quota)) < length) {
