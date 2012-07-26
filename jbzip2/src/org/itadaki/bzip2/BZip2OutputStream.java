@@ -109,10 +109,9 @@ public class BZip2OutputStream extends OutputStream {
 
 		int bytesWritten;
 
-        int quota = length /(numCores+1);
 
 		while (length > 0) {
-			if ((bytesWritten = this.blockCompressor.write (data, offset, (quota >length)? length: quota)) < length) {
+			if ((bytesWritten = this.blockCompressor.write (data, offset,length)) < length) {
 				executor.submit(new BlockWrite(blockCompressor));
 				initialiseNextBlock();
 			}
