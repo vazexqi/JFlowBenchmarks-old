@@ -21,3 +21,7 @@ task compress(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+// Install gradlew
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.0'
+}
