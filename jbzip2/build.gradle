@@ -1,0 +1,27 @@
+apply plugin: 'java'
+defaultTasks 'compress'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/edu'
+            srcDir 'src/org'
+        }
+    }
+
+}
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+
+
+task compress(type: JavaExec, dependsOn: 'classes') {
+    main = 'edu.illinois.jflow.benchmark.CaliperBenchmark'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+// Install gradlew
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.0'
+}

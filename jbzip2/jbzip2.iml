@@ -11,6 +11,8 @@
     <orderEntry type="module" module-name="jbzip2" />
     <orderEntry type="library" name="gpars-1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="org.codehaus.groovy:groovy-all:1.8.6" level="project" />
+    <orderEntry type="library" name="gpars-1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="caliper-1.0-SNAPSHOT" level="project" />
   </component>
 </module>
 
