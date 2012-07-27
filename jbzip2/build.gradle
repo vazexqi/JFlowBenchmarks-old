@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'groovy'
 defaultTasks 'compress'
 
 sourceSets {
@@ -10,14 +11,18 @@ sourceSets {
     }
 
 }
+repositories {
+    mavenCentral()
+}
 dependencies {
+    groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.8.6'
     compile fileTree(dir: 'lib', include: '*.jar')
 }
 
 
 
 task compress(type: JavaExec, dependsOn: 'classes') {
-    main = 'edu.illinois.jflow.benchmark.CaliperBenchmark'
+    main = 'edu.illinois.jflow.benchmark.Benchmark'
     classpath = sourceSets.main.runtimeClasspath
 }
 
