@@ -97,7 +97,7 @@ public class BZip2OutputStream extends OutputStream {
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(byte[], int, int)
 	 */
-	public void write (final byte[] data, int offset, int length,int numCores) throws IOException {
+	public void write (final byte[] data, int offset, int length) throws IOException {
 
 		if (this.outputStream == null) {
 			throw new BZip2Exception ("Stream closed");
