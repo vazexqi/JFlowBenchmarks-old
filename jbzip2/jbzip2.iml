@@ -8,19 +8,9 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="1.7" jdkType="JavaSDK" />
-    <orderEntry type="module-library">
-      <library name="junit4">
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="junit-4.10" level="project" />
-    <orderEntry type="library" name="junit" level="project" />
-    <orderEntry type="module" module-name="bzip2" />
+    <orderEntry type="module" module-name="jbzip2" />
     <orderEntry type="library" name="gpars-1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="org.codehaus.groovy:groovy-all:1.8.6" level="project" />
   </component>
 </module>
 

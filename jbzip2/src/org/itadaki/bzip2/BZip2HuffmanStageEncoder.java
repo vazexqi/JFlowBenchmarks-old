@@ -363,7 +363,7 @@ class BZip2HuffmanStageEncoder {
 	 * Encodes and writes the block data
 	 * @throws IOException on any I/O error writing the data
 	 */
-	public void encode() throws IOException {
+	public void encode(int bwtStartPointer, BZip2BlockCompressor blockCompressor) throws IOException {
 
 		// Create optimised selector list and Huffman tables
 		generateHuffmanOptimisationSeeds();
@@ -373,6 +373,7 @@ class BZip2HuffmanStageEncoder {
 		assignHuffmanCodeSymbols();
 
 		// Write out the tables and the block data encoded with them
+        blockCompressor.writeHeader(bwtStartPointer);
 		writeSelectorsAndHuffmanTables();
 		writeBlockData();
 

@@ -22,8 +22,20 @@
 
 package org.itadaki.bzip2;
 
+import groovyx.gpars.DataflowMessagingRunnable;
+import groovyx.gpars.dataflow.Dataflow;
+import groovyx.gpars.dataflow.DataflowChannel;
+import groovyx.gpars.dataflow.DataflowQueue;
+import groovyx.gpars.dataflow.operator.DataflowProcessor;
+import groovyx.gpars.dataflow.operator.PoisonPill;
+import groovyx.gpars.group.DefaultPGroup;
+import groovyx.gpars.group.PGroup;
+import groovyx.gpars.scheduler.DefaultPool;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -64,6 +76,13 @@ public class BZip2OutputStream extends OutputStream {
 	private BZip2BlockCompressor blockCompressor;
 
 
+    /*
+     * Dataflow Variables
+     */
+    private PGroup group;
+    private final DataflowProcessor bwtOperator, mtfOperator, huffmanOperator;
+    private final DataflowQueue<Object> bwtInputChannel, mtfInputChannel, huffmanInputChannel;
+
 	/* (non-Javadoc)
 	 * @see java.io.OutputStream#write(int)
 	 */
@@ -103,14 +122,13 @@ public class BZip2OutputStream extends OutputStream {
 
 		int bytesWritten;
 		while (length > 0) {
-			if ((bytesWritten = this.blockCompressor.write (data, offset, length)) < length) {
+			if ((bytesWritten = this.blockCompressor.write (data, offset, length)) < length) {;
 				closeBlock();
 				initialiseNextBlock();
 			}
 			offset += bytesWritten;
 			length -= bytesWritten;
 		}
-
 	}
 
 
@@ -153,9 +171,8 @@ public class BZip2OutputStream extends OutputStream {
 		this.blockCompressor.close();
 		int blockCRC = this.blockCompressor.getCRC();
 		this.streamCRC = ((this.streamCRC << 1) | (this.streamCRC >>> 31)) ^ blockCRC;
-
+        bwtInputChannel.bind(blockCompressor);
 	}
-
 
 	/**
 	 * Compresses and writes out any as yet unwritten data, then writes the end of the BZip2 stream.
@@ -168,6 +185,7 @@ public class BZip2OutputStream extends OutputStream {
 			this.streamFinished = true;
 			try {
 				closeBlock();
+                terminateOperators();
 				this.bitOutputStream.writeBits (24, BZip2Constants.STREAM_END_MARKER_1);
 				this.bitOutputStream.writeBits (24, BZip2Constants.STREAM_END_MARKER_2);
 				this.bitOutputStream.writeInteger (this.streamCRC);
@@ -177,9 +195,19 @@ public class BZip2OutputStream extends OutputStream {
 				this.blockCompressor = null;
 			}
 		}
-
 	}
 
+    public void terminateOperators(){
+        bwtInputChannel.bind(PoisonPill.getInstance());
+
+        try {
+            bwtOperator.join();
+            mtfOperator.join();
+            huffmanOperator.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 * @param outputStream The output stream to write to
@@ -206,6 +234,47 @@ public class BZip2OutputStream extends OutputStream {
 		this.bitOutputStream.writeBits (8,  BZip2Constants.STREAM_START_MARKER_2);
 		this.bitOutputStream.writeBits (8, '0' + blockSizeMultiplier);
 
+        this.group = new DefaultPGroup(new DefaultPool(true, Runtime.getRuntime().availableProcessors()+1));
+        this.bwtInputChannel = new DataflowQueue<Object>();
+        this.mtfInputChannel = new DataflowQueue<Object>();
+        this.huffmanInputChannel = new DataflowQueue<Object>();
+
+        this.bwtOperator = group.operator(Arrays.asList(bwtInputChannel), Arrays.asList(mtfInputChannel), new DataflowMessagingRunnable(1){
+
+            @Override
+            protected void doRun(Object... objects) {
+                BZip2BlockCompressor message = (BZip2BlockCompressor) objects[0];
+                // Perform the Burrows Wheeler Transform
+                BZip2DivSufSort divSufSort = new BZip2DivSufSort (message.block, message.bwtBlock, message.blockLength);
+                message.bwtStartPointer = divSufSort.bwt();
+                getOwningProcessor().bindOutput(message);
+            }
+        });
+
+        this.mtfOperator = group.operator(Arrays.asList(mtfInputChannel), Arrays.asList(huffmanInputChannel), new DataflowMessagingRunnable(1) {
+            @Override
+            protected void doRun(Object... objects) {
+                BZip2BlockCompressor message = (BZip2BlockCompressor) objects[0];
+                // Perform the Move To Front Transform and Run-Length Encoding[2] stages
+                message.mtfEncoder = new BZip2MTFAndRLE2StageEncoder (message.bwtBlock, message.blockLength, message.blockValuesPresent);
+                message.mtfEncoder.encode();
+                getOwningProcessor().bindOutput(message);
+            }
+        });
+
+        this.huffmanOperator = group.operator(Arrays.asList(huffmanInputChannel), Arrays.asList(), new DataflowMessagingRunnable(1) {
+            @Override
+            protected void doRun(Object... objects) {
+                BZip2BlockCompressor message = (BZip2BlockCompressor) objects[0];
+                // Perform the Huffman Encoding stage and write out the encoded data
+                BZip2HuffmanStageEncoder huffmanEncoder = new BZip2HuffmanStageEncoder (message.bitOutputStream, message.mtfEncoder.getMtfBlock(), message.mtfEncoder.getMtfLength(), message.mtfEncoder.getMtfAlphabetSize(), message.mtfEncoder.getMtfSymbolFrequencies());
+                try {
+                    huffmanEncoder.encode(message.bwtStartPointer, message);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 		initialiseNextBlock();
 
 	}

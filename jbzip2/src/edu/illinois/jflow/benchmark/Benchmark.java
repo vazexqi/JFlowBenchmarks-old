@@ -18,7 +18,7 @@ public class Benchmark {
 	public static void main(String[] args) throws Exception {
 		final File dir= mkdir("dir");
 		final File inputFile= new File("inputs/media.dat");
-		final File outputFile= new File(dir, "media.compressed.bz2");
+		final File outputFile= new File("pipeline.compressed.bz2");
 
 		InputStream fileInputStream= new BufferedInputStream(new FileInputStream(inputFile));
 		BufferedOutputStream bufferedOutputStream= new BufferedOutputStream(new FileOutputStream(outputFile));
@@ -33,12 +33,10 @@ public class Benchmark {
 			compressorStream.write(buffer, 0, bytesRead);
 		}
 
-		long stopCompressed= System.currentTimeMillis();
-		System.out.println((stopCompressed - startCompressed) + "ms");
-
 		fileInputStream.close();
 		compressorStream.close();
-
+        long stopCompressed= System.currentTimeMillis();
+        System.out.println((stopCompressed - startCompressed) + "ms");
 	}
 
 	static File mkdir(String name) throws IOException {

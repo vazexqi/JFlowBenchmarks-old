@@ -43,50 +43,52 @@ public class BZip2BlockCompressor {
 	/**
 	 * The stream to which compressed BZip2 data is written
 	 */
-	private final BZip2BitOutputStream bitOutputStream;
+	public final BZip2BitOutputStream bitOutputStream;
 
 	/**
 	 * CRC builder for the block
 	 */
-	private final CRC32 crc = new CRC32();
+	public final CRC32 crc = new CRC32();
 
 	/**
 	 * The RLE'd block data
 	 */
-	private final byte[] block;
+	public final byte[] block;
 
 	/**
 	 * Current length of the data within the {@link block} array
 	 */
-	private int blockLength = 0;
+	public int blockLength = 0;
 
 	/**
 	 * A limit beyond which new data will not be accepted into the block
 	 */
-	private final int blockLengthLimit;
+	public final int blockLengthLimit;
 
 	/**
 	 * The values that are present within the RLE'd block data. For each index, {@code true} if that
 	 * value is present within the data, otherwise {@code false}
 	 */
-	private final boolean[] blockValuesPresent = new boolean[256];
+	public final boolean[] blockValuesPresent = new boolean[256];
 
 	/**
 	 * The Burrows Wheeler Transformed block data
 	 */
-	private final int[] bwtBlock;
+	public final int[] bwtBlock;
 
 	/**
 	 * The current RLE value being accumulated (undefined when {@link #rleLength} is 0)
 	 */
-	private int rleCurrentValue = -1;
+	public int rleCurrentValue = -1;
 
 	/**
 	 * The repeat count of the current RLE value
 	 */
-	private int rleLength = 0;
+	public int rleLength = 0;
 
 
+    public int bwtStartPointer;
+    public BZip2MTFAndRLE2StageEncoder mtfEncoder;
 	/**
 	 * Write the Huffman symbol to output byte map
 	 * @throws IOException on any I/O error writing the data
@@ -243,32 +245,22 @@ public class BZip2BlockCompressor {
 		// Apply a one byte block wrap required by the BWT implementation
 		this.block[this.blockLength] = this.block[0];
 
-		// Perform the Burrows Wheeler Transform
-		BZip2DivSufSort divSufSort = new BZip2DivSufSort (this.block, this.bwtBlock, this.blockLength);
-		int bwtStartPointer = divSufSort.bwt();
-
-		// Write out the block header
-		this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
-		this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
-		this.bitOutputStream.writeInteger (this.crc.getCRC());
-		this.bitOutputStream.writeBoolean (false); // Randomised block flag. We never create randomised blocks
-		this.bitOutputStream.writeBits (24, bwtStartPointer);
-
-		// Write out the symbol map
-		writeSymbolMap();
-
-		// Perform the Move To Front Transform and Run-Length Encoding[2] stages 
-		BZip2MTFAndRLE2StageEncoder mtfEncoder = new BZip2MTFAndRLE2StageEncoder (this.bwtBlock, this.blockLength, this.blockValuesPresent);
-		mtfEncoder.encode();
-
-		// Perform the Huffman Encoding stage and write out the encoded data
-		BZip2HuffmanStageEncoder huffmanEncoder = new BZip2HuffmanStageEncoder (this.bitOutputStream, mtfEncoder.getMtfBlock(), mtfEncoder.getMtfLength(), mtfEncoder.getMtfAlphabetSize(), mtfEncoder.getMtfSymbolFrequencies());
-		huffmanEncoder.encode();
-
 	}
 
+    public void writeHeader(int bwtStartPointer) throws IOException {
+        // Write out the block header
+        this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_1);
+        this.bitOutputStream.writeBits (24, BZip2Constants.BLOCK_HEADER_MARKER_2);
+        this.bitOutputStream.writeInteger (this.crc.getCRC());
+        this.bitOutputStream.writeBoolean (false); // Randomised block flag. We never create randomised blocks
+        this.bitOutputStream.writeBits (24, bwtStartPointer);
 
-	/**
+        // Write out the symbol map
+        writeSymbolMap();
+    }
+
+
+    /**
 	 * Determines if any bytes have been written to the block
 	 * @return {@code true} if one or more bytes has been written to the block, otherwise
 	 *         {@code false}
@@ -306,5 +298,6 @@ public class BZip2BlockCompressor {
 		this.blockLengthLimit = blockSize - 6; // 5 bytes for one RLE run plus one byte - see {@link #write(int)}
 
 	}
+
 
 }
