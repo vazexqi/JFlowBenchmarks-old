@@ -20,7 +20,7 @@ public class Benchmark {
 
 		// Compression - need to use buffered streams or the results will be too I/O intensive
 		long startCompressed= System.currentTimeMillis();
-
+        compressorStream.setCores(3);
 		byte[] buffer= new byte[5242880];
 		int bytesRead;
 		while ((bytesRead= fileInputStream.read(buffer)) != -1) {

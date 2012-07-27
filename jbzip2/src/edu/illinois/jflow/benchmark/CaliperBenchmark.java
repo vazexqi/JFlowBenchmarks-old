@@ -32,7 +32,7 @@ public class CaliperBenchmark extends Benchmark {
             int bytesRead;
             compressorStream.setCores(numCores);
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                compressorStream.write(buffer, 0, bytesRead, numCores);
+                compressorStream.write(buffer, 0, bytesRead);
             }
             compressorStream.shutDownExecutor();
             long stopCompressed = System.currentTimeMillis();
