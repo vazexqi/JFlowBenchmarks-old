@@ -16,6 +16,8 @@ repositories {
 }
 dependencies {
     groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.8.6'
+    compile group: 'com.google.guava', name: 'guava', version: '12.0'
+    compile group: 'com.google.code.gson', name: 'gson', version: "1.7"
     compile fileTree(dir: 'lib', include: '*.jar')
 }
 
