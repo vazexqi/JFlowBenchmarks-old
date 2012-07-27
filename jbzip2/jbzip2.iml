@@ -19,7 +19,7 @@
     </orderEntry>
     <orderEntry type="library" name="junit-4.10" level="project" />
     <orderEntry type="library" name="junit" level="project" />
-    <orderEntry type="module" module-name="bzip2" />
+    <orderEntry type="module" module-name="jbzip2" />
     <orderEntry type="library" name="caliper-1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="gson-1.7.1" level="project" />
     <orderEntry type="library" name="guava-11.0.1" level="project" />
