@@ -1,0 +1,5 @@
+To get Linux .iso file:
+wget -O inputs/ubuntu.iso http://www.ubuntu.com/start-download?distro=desktop&bits=64&release=lts
+
+To run jbzip2 benchmark:
+./gradlew compress
