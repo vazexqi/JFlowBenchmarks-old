@@ -19,7 +19,7 @@ public class CompressionWorker implements Worker {
         Options options = new Options(optionMap);
         Trial trial = new Trial(benchmark, methodName, options, log);
         trial.warmUp();
-        return trial.run(10);
+        return trial.run(3);
     }
 
     private static class Trial {
@@ -58,7 +58,7 @@ public class CompressionWorker implements Worker {
 
             log.notifyMeasurementPhaseStarting();
 
-            for (int trials = 0; trials < 10; trials++) {
+            for (int trials = 0; trials < 1; trials++) {
                 int reps = targetReps;
                 if (options.gcBeforeEach) {
                     Util.forceGc();

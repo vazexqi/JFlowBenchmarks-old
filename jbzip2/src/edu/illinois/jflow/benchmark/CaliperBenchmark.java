@@ -19,8 +19,8 @@ public class CaliperBenchmark extends Benchmark {
 
     public long timeCompression(int reps) throws Exception {
         long totalTime = 0;
-        final File inputFile = new File("inputs/media.dat");
-        final File outputFile = new File("media.compressed.bz2");
+        final File inputFile = new File("inputs/ubuntu.iso");
+        final File outputFile = new File("ubuntu.compressed.bz2");
         for (int i = 0; i < reps; i++) {
             InputStream fileInputStream = new BufferedInputStream(new FileInputStream(inputFile));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
@@ -32,7 +32,12 @@ public class CaliperBenchmark extends Benchmark {
             int bytesRead;
             compressorStream.setCores(numCores);
             while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                compressorStream.write(buffer, 0, bytesRead);
+                if(numCores <= 1){
+                    compressorStream.writeSerial(buffer,0,bytesRead);
+                }
+                else{
+                    compressorStream.write(buffer, 0, bytesRead);
+                }
             }
             compressorStream.shutDownExecutor();
             long stopCompressed = System.currentTimeMillis();
