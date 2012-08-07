@@ -16,19 +16,20 @@ import java.io.IOException;
  */
 public class Parse {
 
-	/**
-	 * Creates a new instance of parser
-	 */
-	public Parse() {
-	}
+    /**
+     * Creates a new instance of parser
+     */
+    public Parse() {
+    }
 
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
+    /**
+     * @param args the command line arguments
+     */
 
-	public static void main(String[] args) throws IOException {
-		Parser.doIt(args);
-	}
+    public static void main(String[] args) throws IOException {
+        long startTime = System.currentTimeMillis();
+        Parser.doIt(args);
+        System.out.println(System.currentTimeMillis() - startTime);
+    }
 
 }
