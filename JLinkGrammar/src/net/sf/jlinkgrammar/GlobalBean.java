@@ -3,6 +3,7 @@ package net.sf.jlinkgrammar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a hacked construct. This bean holds several constructs and variables
@@ -282,7 +283,8 @@ public class GlobalBean {
     public final static int WType_QTYPE = 3;
     public final static int WType_QDTYPE = 4;
 
-    public static int batch_errors = 0;
+    //public static int batch_errors = 0;
+    public static AtomicInteger batchErrors =new AtomicInteger(0);
     public static boolean input_pending = false;
     public static int input_char;
     //public static ParseOptions opts;
@@ -350,7 +352,7 @@ public class GlobalBean {
                 linkage = new Linkage(0, sent, opts);
                 linkage.process_linkage(opts);
             }
-            opts.out.println("+++++ error " + batch_errors);
+            opts.out.println("+++++ error " + batchErrors.get());
         }
     }
 
@@ -360,19 +362,19 @@ public class GlobalBean {
         if (sent.numValidLinkages() > 0) {
             if (label == UNGRAMMATICAL) {
                 opts.out.println("error: parsed ungrammatical sentence");
-                batch_errors++;
+                batchErrors.getAndAdd(1);
                 return UNGRAMMATICAL;
             }
             if ((sent.disjunctCost(0) == 0)
                     && (label == PARSE_WITH_DISJUNCT_COST_GT_0)) {
                 opts.out.println("error: cost=0");
-                batch_errors++;
+                batchErrors.getAndAdd(1);
                 return PARSE_WITH_DISJUNCT_COST_GT_0;
             }
         } else {
             if (label != UNGRAMMATICAL) {
                 opts.out.println("error: failed");
-                batch_errors++;
+                batchErrors.getAndAdd(1);
                 return UNGRAMMATICAL;
             }
         }

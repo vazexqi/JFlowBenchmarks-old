@@ -295,7 +295,7 @@ public class Parser {
 
         if (opts.getBatchMode()) {
             opts.printTime("Total");
-            opts.out.println("" + GlobalBean.batch_errors + " error" + ((GlobalBean.batch_errors == 1) ? "" : "s") + ".");
+            opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
         }
     }
 
