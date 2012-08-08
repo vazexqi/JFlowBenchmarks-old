@@ -285,7 +285,7 @@ public class GlobalBean {
     public static int batch_errors = 0;
     public static boolean input_pending = false;
     public static int input_char;
-    public static ParseOptions opts;
+    //public static ParseOptions opts;
 
     public static int lperrno;
     public static String lperrmsg;
@@ -328,8 +328,7 @@ public class GlobalBean {
         }
     }
 
-    public static boolean specialCommand(StringBuffer input_string,
-                                         Dictionary dict) {
+    public static boolean specialCommand(StringBuffer input_string, Dictionary dict,ParseOptions opts) {
 
         if (input_string.charAt(0) == '\n')
             return true;

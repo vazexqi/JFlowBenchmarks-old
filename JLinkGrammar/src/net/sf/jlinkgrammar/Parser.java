@@ -53,7 +53,7 @@ public class Parser {
             i++;
         }
         opts = new ParseOptions();
-        GlobalBean.opts = opts;
+        //GlobalBean.opts = opts;
         // opts = new ParseOptions();
 
         opts.setMaxSentenceLength(70);
@@ -244,7 +244,7 @@ public class Parser {
             }
             if (input_string.equals("quit\n") || input_string.equals("exit\n"))
                 break;
-            if (GlobalBean.specialCommand(input_string, dict))
+            if (GlobalBean.specialCommand(input_string, dict, opts))
                 continue;
             if (opts.getEchoOn()) {
                 opts.out.println(input_string);
