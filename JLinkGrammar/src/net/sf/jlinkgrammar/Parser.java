@@ -177,13 +177,17 @@ public class Parser {
     public static void doIt(String arg[]) throws IOException {
 
         InitializeVars(arg);
+        opts.setDisjunctCost(2);
+        opts.setMinNullCount(0);
+        opts.setMaxNullCount(0);
+        opts.resetResources();
 
         /*
            * This section is a simple example of the API for those trying to
            * figure out how to incorporate it into their own program. Un-comment
            * it to see the results
            */
-        {
+        /*{
             String testString = "Which camera is small?"; // a simple test
             // sentence
             String testString2 = "Which camera is best?"; // a simple test
@@ -198,10 +202,7 @@ public class Parser {
             // Set up a quick test
             sent = new Sentence(testString, dict, opts);
             // First parse with cost 0 or 1 and no null links
-            opts.setDisjunctCost(2);
-            opts.setMinNullCount(0);
-            opts.setMaxNullCount(0);
-            opts.resetResources();
+
             num_linkages = sent.sentenceParse(opts);
             if (num_linkages == 0) {
                 // O.K. we have a null link (i.e. word without a link)
@@ -211,7 +212,7 @@ public class Parser {
                 num_linkages = sent.sentenceParse(opts);
             }
 
-            /*
+            *//*
                 * This is an example of the API uncomment it to see it work. //
                 * Normally you loop over linkages, here we only choose the first
                 * Linkage myLinkage = new Linkage(0, sent, opts); // Normally you
@@ -230,8 +231,8 @@ public class Parser {
                 * rightWord);
                 *
                 * }
-                */
-        }
+                *//*
+        }*/
 
         /*
            * This is the standard command line parser reading from the standard
@@ -266,10 +267,10 @@ public class Parser {
                 }
                 continue;
             } /* First parse with cost 0 or 1 and no null links */
-            opts.setDisjunctCost(2);
+            /*opts.setDisjunctCost(2);
             opts.setMinNullCount(0);
             opts.setMaxNullCount(0);
-            opts.resetResources();
+            opts.resetResources();*/
             num_linkages = sent.sentenceParse(opts);
             /* Now parse with null links */
             if (num_linkages == 0 && !opts.getBatchMode()) {
