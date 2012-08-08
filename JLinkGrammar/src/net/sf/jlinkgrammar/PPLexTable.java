@@ -11,15 +11,15 @@ public class PPLexTable {
     /**
      * array of labels (null-terminated)
      */
-    public String labels[] = new String[GlobalBean.PP_LEXER_MAX_LABELS];
+    public final String[] labels = new String[GlobalBean.PP_LEXER_MAX_LABELS];
     /**
      * str. for each label
      */
-    public PPLabelNode nodes_of_label[] = new PPLabelNode[GlobalBean.PP_LEXER_MAX_LABELS];
+    public final PPLabelNode[] nodes_of_label = new PPLabelNode[GlobalBean.PP_LEXER_MAX_LABELS];
     /**
      * efficiency
      */
-    public PPLabelNode last_node_of_label[] = new PPLabelNode[GlobalBean.PP_LEXER_MAX_LABELS];
+    public final PPLabelNode[] last_node_of_label = new PPLabelNode[GlobalBean.PP_LEXER_MAX_LABELS];
     /**
      * state: current node of label
      */

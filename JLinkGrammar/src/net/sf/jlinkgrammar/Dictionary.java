@@ -135,7 +135,7 @@ import java.util.StringTokenizer;
  */
 public class Dictionary {
     public DictNode root;
-    public String name;
+    public final String name;
     public boolean use_unknown_word;
     public boolean unknown_word_defined;
     public boolean capitalized_word_defined;
@@ -156,7 +156,7 @@ public class Dictionary {
     public ConnectorSet unlimited_connector_set; /* null=everthing is unlimited */
     public int max_cost;
     public int num_entries;
-    public ParseOptions opts;
+    public final ParseOptions opts;
     public WordFile word_file_header;
     public Exp exp_list;
     /**
@@ -164,7 +164,7 @@ public class Dictionary {
      * dictionary. Used for freeing the dictionary
      */
     public Reader fp;
-    public StringBuffer token = new StringBuffer();
+    public final StringBuffer token = new StringBuffer();
     public boolean is_special;
     public int already_got_it;
     public int line_number;
@@ -1710,7 +1710,7 @@ public class Dictionary {
         return dn;
     }
 
-    static StringBuffer current_name = new StringBuffer("AAAAAAAA");
+    static final StringBuffer current_name = new StringBuffer("AAAAAAAA");
     static final int CN_size = current_name.length();
 
     /*

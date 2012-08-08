@@ -89,7 +89,7 @@ public class ParseOptions {
     /**
      * min length for two-pass post processing
      */
-    public int twopass_length;
+    public final int twopass_length;
     /**
      * max_sentence_length = 70 Where is this used? Can't find a reference to it
      * in the code!
@@ -110,16 +110,16 @@ public class ParseOptions {
     /**
      * For deciding when to "abort" the parsing
      */
-    public Resources resources;
-    public boolean display_short;
+    public final Resources resources;
+    public final boolean display_short;
     /**
      * as in "dog.n" as opposed to "dog"
      */
-    public boolean display_word_subscripts;
+    public final boolean display_word_subscripts;
     /**
      * as in "Ss" as opposed to "S"
      */
-    public boolean display_link_subscripts;
+    public final boolean display_link_subscripts;
     /**
      * set true to display walls default = true.
      */
@@ -578,10 +578,10 @@ public class ParseOptions {
     }
 
     class Switch {
-        String string;
-        boolean isboolean;
-        String description;
-        Setter p;
+        final String string;
+        final boolean isboolean;
+        final String description;
+        final Setter p;
 
         Switch(String string, boolean isboolean, String description, Setter p) {
             this.string = string;
@@ -593,7 +593,7 @@ public class ParseOptions {
 
     ;
 
-    Switch default_switches[] = {
+    final Switch[] default_switches = {
             new Switch("verbosity", false, "Level of detail in output",
                     new Setter() {
                         public void set(int value) {
@@ -764,8 +764,8 @@ public class ParseOptions {
                     })};
 
     static class UserCommand {
-        String s;
-        String str;
+        final String s;
+        final String str;
 
         UserCommand(String s, String str) {
             this.s = s;
@@ -773,7 +773,7 @@ public class ParseOptions {
         }
     }
 
-    static UserCommand user_command[] = {
+    static final UserCommand[] user_command = {
             new UserCommand("variables",
                     "List user-settable variables and their functions"),
             new UserCommand("help", "List the commands and what they do")};

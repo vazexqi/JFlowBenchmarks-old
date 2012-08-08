@@ -54,7 +54,7 @@ public class ParseSet {
 		current = first;
 	}
 
-	static ParseSet dummy_set = new ParseSet(1, null);
+	static final ParseSet dummy_set = new ParseSet(1, null);
 
 	/**
 	 * returns an empty set of parses

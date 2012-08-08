@@ -11,8 +11,8 @@ public class LinksetSet {
 	int hash_table_size;
 	LinksetNode hash_table[]; /* data actually lives here */
 
-	static LinksetSet ss[] = new LinksetSet[GlobalBean.LINKSET_MAX_SETS];
-	static boolean q_unit_is_used[] = new boolean[GlobalBean.LINKSET_MAX_SETS];
+	static final LinksetSet[] ss = new LinksetSet[GlobalBean.LINKSET_MAX_SETS];
+	static final boolean[] q_unit_is_used = new boolean[GlobalBean.LINKSET_MAX_SETS];
 
 	static void linkset_clear(int unit) {
 		int i;

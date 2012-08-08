@@ -5,7 +5,7 @@ package net.sf.jlinkgrammar;
  * 
  */
 public class PPNode {
-	DTypeList d_type_array[] = new DTypeList[GlobalBean.MAX_LINKS];
+	final DTypeList[] d_type_array = new DTypeList[GlobalBean.MAX_LINKS];
 	String violation;
 
 }

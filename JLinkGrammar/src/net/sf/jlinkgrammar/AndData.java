@@ -269,6 +269,6 @@ public class AndData {
 	int LT_bound;
 	int LT_size;
 	Disjunct label_table[];
-	LabelNode hash_table[] = new LabelNode[GlobalBean.HT_SIZE];
+	final LabelNode[] hash_table = new LabelNode[GlobalBean.HT_SIZE];
 
 }

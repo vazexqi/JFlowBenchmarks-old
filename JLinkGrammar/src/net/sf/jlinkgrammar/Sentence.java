@@ -28,7 +28,7 @@ public class Sentence {
     /**
      * words are defined from this dictionary
      */
-    public Dictionary dict;
+    public final Dictionary dict;
     /**
      * number of words in sentence string under evaluation
      */
@@ -36,7 +36,7 @@ public class Sentence {
     /**
      * array of words after tokenization
      */
-    public Word word[] = new Word[GlobalBean.MAX_SENTENCE];
+    public final Word[] word = new Word[GlobalBean.MAX_SENTENCE];
     /**
      * true if i'th word is a conjunction, as defined by the program TODO -
      * remove IndoEuropean dependancy
@@ -87,12 +87,12 @@ public class Sentence {
     /**
      * used to keep track of fat disjuncts
      */
-    public AndData and_data;
+    public final AndData and_data;
     /**
      * don't prune rules more than once in p.p.
      */
     public boolean q_pruned_rules;
-    public int post_quote[] = new int[GlobalBean.MAX_SENTENCE];
+    public final int[] post_quote = new int[GlobalBean.MAX_SENTENCE];
     public PatchElement patch_array[];
 
     public static Word local_sent[];
@@ -2836,7 +2836,7 @@ public class Sentence {
 
     public static int match_cost;
 
-    public static int match_l_table_size[] = new int[GlobalBean.MAX_SENTENCE]; /*
+    public static final int[] match_l_table_size = new int[GlobalBean.MAX_SENTENCE]; /*
 																				 * the
 																				 * sizes
 																				 * of
@@ -2844,11 +2844,11 @@ public class Sentence {
 																				 * hash
 																				 * tables
 																				 */
-    public static int match_r_table_size[] = new int[GlobalBean.MAX_SENTENCE];
+    public static final int[] match_r_table_size = new int[GlobalBean.MAX_SENTENCE];
 
     /* the beginnings of the hash tables */
-    public static MatchNode match_l_table[][] = new MatchNode[GlobalBean.MAX_SENTENCE][];
-    public static MatchNode match_r_table[][] = new MatchNode[GlobalBean.MAX_SENTENCE][];
+    public static final MatchNode[][] match_l_table = new MatchNode[GlobalBean.MAX_SENTENCE][];
+    public static final MatchNode[][] match_r_table = new MatchNode[GlobalBean.MAX_SENTENCE][];
 
     public void initFastMatcher() {
         int w, len, size, i;
@@ -3289,11 +3289,11 @@ public class Sentence {
 
     public static boolean structure_violation;
     /* The following three functions are all for computing the cost of and lists */
-    public static boolean visited[] = new boolean[GlobalBean.MAX_SENTENCE];
-    public static int and_element_sizes[] = new int[GlobalBean.MAX_SENTENCE];
-    public static int and_element[] = new int[GlobalBean.MAX_SENTENCE];
+    public static final boolean[] visited = new boolean[GlobalBean.MAX_SENTENCE];
+    public static final int[] and_element_sizes = new int[GlobalBean.MAX_SENTENCE];
+    public static final int[] and_element = new int[GlobalBean.MAX_SENTENCE];
     public static int N_and_elements;
-    public static int outside_word[] = new int[GlobalBean.MAX_SENTENCE];
+    public static final int[] outside_word = new int[GlobalBean.MAX_SENTENCE];
     public static int N_outside_words;
 
     /**
@@ -4219,10 +4219,10 @@ public class Sentence {
     }
 
     /* TRUE if this word has a fat down link, FALSE otherise */
-    public static boolean has_fat_down[] = new boolean[GlobalBean.MAX_SENTENCE];
+    public static final boolean[] has_fat_down = new boolean[GlobalBean.MAX_SENTENCE];
 
     /* points to the image structure for each word. null if not a fat word. */
-    public static ImageNode image_array[] = new ImageNode[GlobalBean.MAX_SENTENCE];
+    public static final ImageNode[] image_array = new ImageNode[GlobalBean.MAX_SENTENCE];
 
     /*
 	 * The following routines' purpose is to eliminate all but the canonical
@@ -5354,12 +5354,12 @@ public class Sentence {
     public static int N_changed;
 
     /* the sizes of the hash tables */
-    public static int power_l_table_size[] = new int[GlobalBean.MAX_SENTENCE];
-    public static int power_r_table_size[] = new int[GlobalBean.MAX_SENTENCE];
+    public static final int[] power_l_table_size = new int[GlobalBean.MAX_SENTENCE];
+    public static final int[] power_r_table_size = new int[GlobalBean.MAX_SENTENCE];
 
     /* the beginnings of the hash tables */
-    public static CList power_l_table[][] = new CList[GlobalBean.MAX_SENTENCE][];
-    public static CList power_r_table[][] = new CList[GlobalBean.MAX_SENTENCE][];
+    public static final CList[][] power_l_table = new CList[GlobalBean.MAX_SENTENCE][];
+    public static final CList[][] power_r_table = new CList[GlobalBean.MAX_SENTENCE][];
 
     /**
      * Here is what you've been waiting for: POWER-PRUNE
@@ -6009,7 +6009,7 @@ public class Sentence {
 	 */
 
     public final static int CMS_SIZE = (2 << 10);
-    public static Cms cms_table[] = new Cms[CMS_SIZE];
+    public static final Cms[] cms_table = new Cms[CMS_SIZE];
 
     public void initCmsTable() {
         int i;

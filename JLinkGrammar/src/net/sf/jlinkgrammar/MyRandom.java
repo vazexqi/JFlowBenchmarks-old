@@ -7,7 +7,7 @@ import java.util.Random;
  * 
  */
 public class MyRandom {
-	static int random_state[] = new int[2];
+	static final int[] random_state = new int[2];
 	static int random_count = 0;
 	static boolean random_inited = false;
 
@@ -54,7 +54,7 @@ public class MyRandom {
 	/* pretty bad. So, mine is a "competitive" hash function -- you can't */
 	/* make it perform horribly. */
 
-	static int table[] = { 1932757444, 1812851329, 786279284, 481968937,
+	static final int[] table = { 1932757444, 1812851329, 786279284, 481968937,
 			1699140529, 368211428, 1619701602, 850790193, 1642638206,
 			810407642, 199959575, 1030935169, 237895031, 590249699, 1997930855,
 			53546138, 668396581, 1839177873, 638216208, 1670124393, 332713197,

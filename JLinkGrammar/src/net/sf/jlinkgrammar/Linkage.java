@@ -42,33 +42,33 @@ public class Linkage {
     public ParseOptions opts;
 
     /* the following are all for generating postscript */
-    private static int word_used[][] = new int[GlobalBean.MAXSUBL][GlobalBean.MAX_SENTENCE];
+    private static final int[][] word_used = new int[GlobalBean.MAXSUBL][GlobalBean.MAX_SENTENCE];
     /* tells the height of the links above the sentence */
-    private static int link_heights[] = new int[GlobalBean.MAX_LINKS];
+    private static final int[] link_heights = new int[GlobalBean.MAX_LINKS];
     /* the word beginning each row of the display */
-    private static int row_starts[] = new int[GlobalBean.MAX_SENTENCE];
+    private static final int[] row_starts = new int[GlobalBean.MAX_SENTENCE];
     /* the number of rows */
     private static int N_rows;
     /* version of N_words in this file for printing links */
     private static int N_words_to_print;
 
-    private static int center[] = new int[GlobalBean.MAX_SENTENCE];
+    private static final int[] center = new int[GlobalBean.MAX_SENTENCE];
     // TODO - make constituent a linked list - jlr
-    private static Constituent constituent[] = new Constituent[GlobalBean.MAXCONSTITUENTS];
-    private static int templist[] = new int[100];
+    private static final Constituent[] constituent = new Constituent[GlobalBean.MAXCONSTITUENTS];
+    private static final int[] templist = new int[100];
     private static int r_limit = 0;
 
     static class LinkageAndList {
         int num;
-        int e[] = new int[10];
+        final int[] e = new int[10];
         boolean valid;
     }
 
     ;
 
-    public static LinkageAndList andlist[] = new LinkageAndList[1024];
+    public static final LinkageAndList[] andlist = new LinkageAndList[1024];
 
-    public static int wordtype[] = new int[GlobalBean.MAX_SENTENCE];
+    public static final int[] wordtype = new int[GlobalBean.MAX_SENTENCE];
 
     /**
      * setter for object's copy of the sentence
@@ -886,8 +886,8 @@ public class Linkage {
         return ps_string;
     }
 
-    public static char picture[][] = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
-    public static char xpicture[][] = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
+    public static final char[][] picture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
+    public static final char[][] xpicture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
 
     public void set_centers(boolean print_word_0) {
         int i, len, tot;

@@ -6,12 +6,14 @@ package net.sf.jlinkgrammar;
  */
 public class ParseChoice {
 	ParseChoice next;
-	ParseSet set[] = new ParseSet[2];
-	Link link[] = new Link[2]; /*
+	final ParseSet[] set = new ParseSet[2];
+	final Link[] link = new Link[2]; /*
 								 * the lc fields of these is null if there is no
 								 * link used
 								 */
-	Disjunct ld, md, rd; /* the chosen disjuncts for the relevant three words */
+	final Disjunct ld;
+    final Disjunct md;
+    final Disjunct rd; /* the chosen disjuncts for the relevant three words */
 
 	/**
 	 * Constructor

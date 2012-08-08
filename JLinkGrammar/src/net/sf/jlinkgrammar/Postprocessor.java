@@ -41,7 +41,7 @@ public class Postprocessor {
     /**
      * maintain state during a call to postProcess() for the depth-first search
      */
-    boolean visited[] = new boolean[GlobalBean.MAX_SENTENCE];
+    final boolean[] visited = new boolean[GlobalBean.MAX_SENTENCE];
     /**
      * root of the pp_node tree
      *

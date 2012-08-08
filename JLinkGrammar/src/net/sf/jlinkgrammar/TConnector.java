@@ -6,10 +6,10 @@ package net.sf.jlinkgrammar;
  * 
  */
 public class TConnector {
-	boolean multi; /* true if this is a multi-connector */
-	char dir; /* '-' for left and '+' for right */
+	final boolean multi; /* true if this is a multi-connector */
+	final char dir; /* '-' for left and '+' for right */
 	TConnector next;
-	String string;
+	final String string;
 
 	TConnector(TConnector e) {
 		multi = e.multi;

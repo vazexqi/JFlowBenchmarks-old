@@ -24,7 +24,7 @@ package net.sf.jlinkgrammar;
  */
 
 public class CNode {
-	String label;
+	final String label;
 	CNode child;
 	CNode next;
 	int start, end;

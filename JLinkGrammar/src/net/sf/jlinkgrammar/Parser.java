@@ -30,7 +30,7 @@ public class Parser {
     private static boolean af_on = true;
     private static boolean cons_on = true;
     private static int num_linkages;
-    private static StringBuffer input_string = new StringBuffer();
+    private static final StringBuffer input_string = new StringBuffer();
     private static int label = GlobalBean.NOT_LABEL;
     private static ParseOptions opts;
 

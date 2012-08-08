@@ -11,9 +11,9 @@ public class ParseInfo {
     XTableConnector x_table[];
     ParseSet parse_set;
     int N_words;
-    Disjunct chosen_disjuncts[] = new Disjunct[GlobalBean.MAX_SENTENCE];
+    final Disjunct[] chosen_disjuncts = new Disjunct[GlobalBean.MAX_SENTENCE];
     int N_links;
-    Link link_array[] = new Link[GlobalBean.MAX_LINKS];
+    final Link[] link_array = new Link[GlobalBean.MAX_LINKS];
 
     void initialize_links() {
         int i;
@@ -671,7 +671,7 @@ public class ParseInfo {
         return a;
     }
 
-    static ListOfLinks word_links[] = new ListOfLinks[GlobalBean.MAX_SENTENCE]; /*
+    static final ListOfLinks[] word_links = new ListOfLinks[GlobalBean.MAX_SENTENCE]; /*
 																				 * ptr
 																				 * to
 																				 * l
@@ -684,19 +684,19 @@ public class ParseInfo {
 																				 * of
 																				 * word
 																				 */
-    static int dfs_root_word[] = new int[GlobalBean.MAX_SENTENCE]; /*
+    static final int[] dfs_root_word = new int[GlobalBean.MAX_SENTENCE]; /*
 																	 * for the
 																	 * depth
 																	 * -first
 																	 * search
 																	 */
-    static int dfs_height[] = new int[GlobalBean.MAX_SENTENCE]; /*
+    static final int[] dfs_height = new int[GlobalBean.MAX_SENTENCE]; /*
 																 * to determine
 																 * the order to
 																 * do the root
 																 * word dfs
 																 */
-    static Integer height_perm[] = new Integer[GlobalBean.MAX_SENTENCE]; /*
+    static final Integer[] height_perm = new Integer[GlobalBean.MAX_SENTENCE]; /*
 																		 * permute
 																		 * the
 																		 * vertices
