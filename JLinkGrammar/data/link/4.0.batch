@@ -4,9 +4,10 @@
 !limit=1000
 !batch
 !short=20
-!constituents=1
+!constituents=0
 
 %NOUNS
+
 
 The fact that he smiled at me gives me hope
 *The event that he smiled at me gives me hope

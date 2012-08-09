@@ -343,54 +343,47 @@ public class GlobalBean {
         return false;
     }
 
-    public static void batchProcessSomeLinkages(int label, Sentence sent,
-                                                ParseOptions opts) {
+    public static void batchProcessSomeLinkages(int label, Sentence sent, ParseOptions opts) throws IOException {
         Linkage linkage;
-
+        if (sent.numLinkagesFound() > 0) {
+            linkage = new Linkage(0, sent, opts);
+            linkage.process_linkage(opts);
+        }
         if (thereWasAnError(label, sent, opts) != 0) {
-            if (sent.numLinkagesFound() > 0) {
-                linkage = new Linkage(0, sent, opts);
-                linkage.process_linkage(opts);
-            }
             opts.out.println("+++++ error " + batchErrors.get());
         }
     }
 
-    public static int thereWasAnError(int label, Sentence sent,
-                                      ParseOptions opts) {
-
+    public static int thereWasAnError(int label, Sentence sent, ParseOptions opts) {
         if (sent.numValidLinkages() > 0) {
             if (label == UNGRAMMATICAL) {
                 opts.out.println("error: parsed ungrammatical sentence");
-                batchErrors.getAndAdd(1);
+                batchErrors.getAndIncrement();
                 return UNGRAMMATICAL;
             }
-            if ((sent.disjunctCost(0) == 0)
-                    && (label == PARSE_WITH_DISJUNCT_COST_GT_0)) {
+            if ((sent.disjunctCost(0) == 0) && (label == PARSE_WITH_DISJUNCT_COST_GT_0)) {
                 opts.out.println("error: cost=0");
-                batchErrors.getAndAdd(1);
+                batchErrors.getAndIncrement();
                 return PARSE_WITH_DISJUNCT_COST_GT_0;
             }
         } else {
             if (label != UNGRAMMATICAL) {
                 opts.out.println("error: failed");
-                batchErrors.getAndAdd(1);
+                batchErrors.getAndIncrement();
                 return UNGRAMMATICAL;
             }
         }
         return 0;
     }
 
-    public static void processSomeLinkages(Sentence sent, ParseOptions opts)
-            throws IOException {
+    public static void processSomeLinkages(Sentence sent, ParseOptions opts) throws IOException {
         int i, c, num_displayed, num_to_query;
         Linkage linkage;
 
         if (opts.verbosity > 0)
             sent.printParseStatistics(opts);
         if (!opts.getDisplayBad()) {
-            num_to_query = Math.min(sent.numValidLinkages(),
-                    DISPLAY_MAX);
+            num_to_query = Math.min(sent.numValidLinkages(), DISPLAY_MAX);
         } else {
             num_to_query = Math.min(
                     sent.numLinkagesPostProcess(), DISPLAY_MAX);
@@ -398,19 +391,16 @@ public class GlobalBean {
 
         for (i = 0, num_displayed = 0; i < num_to_query; ++i) {
 
-            if ((sent.numViolations(i) > 0)
-                    && (!opts.getDisplayBad())) {
+            if ((sent.numViolations(i) > 0) && (!opts.getDisplayBad())) {
                 continue;
             }
 
             linkage = new Linkage(i, sent, opts);
 
             if (opts.verbosity > 0) {
-                if (sent.numValidLinkages() == 1
-                        && (!opts.getDisplayBad())) {
+                if (sent.numValidLinkages() == 1 && (!opts.getDisplayBad())) {
                     opts.out.print("  Unique linkage, ");
-                } else if ((opts.getDisplayBad())
-                        && (sent.numViolations(i) > 0)) {
+                } else if ((opts.getDisplayBad()) && (sent.numViolations(i) > 0)) {
                     opts.out.print("  Linkage " + (i + 1) + " (bad), ");
                 } else {
                     opts.out.print("  Linkage " + (i + 1) + ", ");

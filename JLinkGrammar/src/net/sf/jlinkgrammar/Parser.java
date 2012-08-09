@@ -284,7 +284,7 @@ public class Parser {
                 }
             }
 
-            opts.printTotalTime();
+            //opts.printTotalTime();
             if (opts.getBatchMode()) {
                 GlobalBean.batchProcessSomeLinkages(label, sent, opts);
             } else {
@@ -294,7 +294,7 @@ public class Parser {
         }
 
         if (opts.getBatchMode()) {
-            opts.printTime("Total");
+            //opts.printTime("Total");
             opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
         }
     }
