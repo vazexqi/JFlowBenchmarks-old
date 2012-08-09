@@ -211,15 +211,15 @@ public class GlobalBean {
     public final static int PP_SECOND_PASS = 2;
 
     public final static int MAXINPUT = 1024;
-    public final static int DISPLAY_MAX = 1024;
+    private final static int DISPLAY_MAX = 1024;
     /**
      * input lines beginning with this are ignored
      */
-    public final static char COMMENT_CHAR = '%';
+    private final static char COMMENT_CHAR = '%';
 
-    public final static char UNGRAMMATICAL = '*';
-    public final static char PARSE_WITH_DISJUNCT_COST_GT_0 = ':';
-    public final static char NO_LABEL = ' ';
+    private final static char UNGRAMMATICAL = '*';
+    private final static char PARSE_WITH_DISJUNCT_COST_GT_0 = ':';
+    private final static char NO_LABEL = ' ';
 
     /**
      * the indiction in a word field that this connector cannot be used -- is
@@ -285,8 +285,8 @@ public class GlobalBean {
 
     //public static int batch_errors = 0;
     public static AtomicInteger batchErrors =new AtomicInteger(0);
-    public static boolean input_pending = false;
-    public static int input_char;
+    private static boolean input_pending = false;
+    private static int input_char;
     //public static ParseOptions opts;
 
     public static int lperrno;
@@ -354,7 +354,7 @@ public class GlobalBean {
         }
     }
 
-    public static int thereWasAnError(int label, Sentence sent, ParseOptions opts) {
+    private static int thereWasAnError(int label, Sentence sent, ParseOptions opts) {
         if (sent.numValidLinkages() > 0) {
             if (label == UNGRAMMATICAL) {
                 opts.out.println("error: parsed ungrammatical sentence");
@@ -438,7 +438,7 @@ public class GlobalBean {
         }
     }
 
-    public static int fgetInputChar(InputStream in, ParseOptions opts)
+    private static int fgetInputChar(InputStream in, ParseOptions opts)
             throws IOException {
         if (!opts.getBatchMode() && (opts.verbosity > 0))
             opts.out.print("linkparser> ");

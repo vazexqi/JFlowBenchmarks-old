@@ -13,7 +13,7 @@ public class Linkage {
     /**
      * number of (tokenized) words
      */
-    public int num_words;
+    private int num_words;
     /**
      * array of word spellings
      */
@@ -21,42 +21,42 @@ public class Linkage {
     /**
      * index and cost information
      */
-    public LinkageInfo info;
+    private LinkageInfo info;
     /**
      * One for thin linkages, bigger for fat
      */
-    public int num_sublinkages;
+    private int num_sublinkages;
     /**
      * Allows user to select particular sublinkage
      */
-    public int current;
+    private int current;
     /**
      * A parse with conjunctions will have several
      */
-    public Sublinkage sublinkage[];
+    private Sublinkage[] sublinkage;
     /**
      * if true, union of links has been computed
      */
-    public boolean unionized;
-    public Sentence sent;
-    public ParseOptions opts;
+    private boolean unionized;
+    private Sentence sent;
+    private ParseOptions opts;
 
     /* the following are all for generating postscript */
-    private static final int[][] word_used = new int[GlobalBean.MAXSUBL][GlobalBean.MAX_SENTENCE];
+    private final int[][] word_used = new int[GlobalBean.MAXSUBL][GlobalBean.MAX_SENTENCE];
     /* tells the height of the links above the sentence */
-    private static final int[] link_heights = new int[GlobalBean.MAX_LINKS];
+    private final int[] link_heights = new int[GlobalBean.MAX_LINKS];
     /* the word beginning each row of the display */
-    private static final int[] row_starts = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] row_starts = new int[GlobalBean.MAX_SENTENCE];
     /* the number of rows */
-    private static int N_rows;
+    private int N_rows;
     /* version of N_words in this file for printing links */
-    private static int N_words_to_print;
+    private int N_words_to_print;
 
-    private static final int[] center = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] center = new int[GlobalBean.MAX_SENTENCE];
     // TODO - make constituent a linked list - jlr
-    private static final Constituent[] constituent = new Constituent[GlobalBean.MAXCONSTITUENTS];
-    private static final int[] templist = new int[100];
-    private static int r_limit = 0;
+    private final Constituent[] constituent = new Constituent[GlobalBean.MAXCONSTITUENTS];
+    private final int[] templist = new int[100];
+    private int r_limit = 0;
 
     static class LinkageAndList {
         int num;
@@ -64,11 +64,9 @@ public class Linkage {
         boolean valid;
     }
 
-    ;
+    private final LinkageAndList[] andlist = new LinkageAndList[1024];
 
-    public static final LinkageAndList[] andlist = new LinkageAndList[1024];
-
-    public static final int[] wordtype = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] wordtype = new int[GlobalBean.MAX_SENTENCE];
 
     /**
      * setter for object's copy of the sentence
@@ -886,8 +884,8 @@ public class Linkage {
         return ps_string;
     }
 
-    public static final char[][] picture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
-    public static final char[][] xpicture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
+    private static final char[][] picture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
+    private static final char[][] xpicture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
 
     public void set_centers(boolean print_word_0) {
         int i, len, tot;
@@ -2218,7 +2216,7 @@ public class Linkage {
         return num_lists;
     }
 
-    public static boolean uppercompare(String s, String t) {
+    private static boolean uppercompare(String s, String t) {
         int i = 0;
         while (i < s.length()
                 && i < t.length()
