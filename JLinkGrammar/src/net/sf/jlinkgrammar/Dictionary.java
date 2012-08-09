@@ -136,25 +136,24 @@ import java.util.StringTokenizer;
 public class Dictionary {
     public DictNode root;
     public final String name;
-    public boolean use_unknown_word;
-    public boolean unknown_word_defined;
-    public boolean capitalized_word_defined;
-    public boolean pl_capitalized_word_defined;
-    public boolean hyphenated_word_defined;
-    public boolean number_word_defined;
-    public boolean ing_word_defined;
-    public boolean s_word_defined;
-    public boolean ed_word_defined;
-    public boolean ly_word_defined;
-    public boolean left_wall_defined;
-    public boolean right_wall_defined;
+    public final boolean use_unknown_word;
+    public final boolean unknown_word_defined;
+    public final boolean capitalized_word_defined;
+    public final boolean pl_capitalized_word_defined;
+    public final boolean hyphenated_word_defined;
+    public final boolean number_word_defined;
+    public final boolean ing_word_defined;
+    public final boolean s_word_defined;
+    public final boolean ed_word_defined;
+    public final boolean ly_word_defined;
+    public final boolean left_wall_defined;
+    public final boolean right_wall_defined;
     public Postprocessor postprocessor;
     public Postprocessor constituent_pp;
     public Dictionary affix_table;
-    public boolean andable_defined;
     public ConnectorSet andable_connector_set; /* null=everything is andable */
     public ConnectorSet unlimited_connector_set; /* null=everthing is unlimited */
-    public int max_cost;
+    public final int max_cost;
     public int num_entries;
     public final ParseOptions opts;
     public WordFile word_file_header;

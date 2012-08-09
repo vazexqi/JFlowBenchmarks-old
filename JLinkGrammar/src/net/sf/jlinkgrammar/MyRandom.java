@@ -7,42 +7,47 @@ import java.util.Random;
  * 
  */
 public class MyRandom {
-	static final int[] random_state = new int[2];
-	static int random_count = 0;
-	static boolean random_inited = false;
+	private static final ThreadLocal<Integer[]> random_state = new ThreadLocal<Integer[]>();
+	private static ThreadLocal<Integer> random_count = new ThreadLocal<Integer>();
+	private static ThreadLocal<Boolean> random_inited = new ThreadLocal<Boolean>();
+    static{
+        random_count.set(0);
+        random_inited.set(false);
+        random_state.set(new Integer[2]);
+    }
 
 	static int step_generator(int d) {
 		/* no overflow should occur, so this is machine independent */
-		random_state[0] = ((random_state[0] * 3) + d + 104729) % 179424673;
-		random_state[1] = ((random_state[1] * 7) + d + 48611) % 86028121;
-		return random_state[0] + random_state[1];
+		random_state.get()[0] = ((random_state.get()[0] * 3) + d + 104729) % 179424673;
+		random_state.get()[1] = ((random_state.get()[1] * 7) + d + 48611) % 86028121;
+		return random_state.get()[0] + random_state.get()[1];
 	}
 
 	static void my_random_initialize(int seed) {
-		if (random_inited) {
+		if (random_inited.get()) {
 			throw new RuntimeException("Random number generator not finalized.");
 		}
 
 		seed = (seed < 0) ? -seed : seed;
 		seed = seed % (1 << 30);
 
-		random_state[0] = seed % 3;
-		random_state[1] = seed % 5;
-		random_count = seed;
-		random_inited = true;
+		random_state.get()[0] = seed % 3;
+		random_state.get()[1] = seed % 5;
+		random_count.set(seed);
+		random_inited.set(true);
 	}
 
 	static void my_random_finalize() {
-		if (!random_inited) {
+		if (!random_inited.get()) {
 			throw new RuntimeException(
 					"Random number generator not initialized.");
 		}
-		random_inited = false;
+		random_inited.set(false);
 	}
 
 	static int my_random() {
-		random_count++;
-		return step_generator(random_count);
+		random_count.set(random_count.get()+1);
+		return step_generator(random_count.get());
 	}
 
 	static int randtable[];

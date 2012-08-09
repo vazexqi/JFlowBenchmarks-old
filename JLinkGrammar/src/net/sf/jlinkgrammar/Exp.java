@@ -117,7 +117,7 @@ public class Exp {
         return size;
     }
 
-    void insert_connectors(int dir) {
+    void insert_connectors(int dir, Sentence sent) {
         /* Put into the set S all of the dir-pointing connectors still in e. */
         Connector dummy = new Connector();
         ExpList el;
@@ -129,11 +129,11 @@ public class Exp {
         if (type == GlobalBean.CONNECTOR_type) {
             if (dir == this.dir) {
                 dummy.string = string;
-                Sentence.insertS(dummy);
+                sent.insertS(dummy);
             }
         } else {
             for (el = l; el != null; el = el.next) {
-                el.e.insert_connectors(dir);
+                el.e.insert_connectors(dir,sent);
             }
         }
     }

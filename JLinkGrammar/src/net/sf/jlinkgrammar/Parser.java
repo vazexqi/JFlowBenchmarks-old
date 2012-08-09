@@ -21,18 +21,18 @@ import java.io.PrintStream;
 public class Parser {
 
     private static Dictionary dict;
-    private static Sentence sent;
-    private static String dictionary_file = null;
-    private static String post_process_knowledge_file = null;
-    private static String constituent_knowledge_file = null;
-    private static String affix_file = null;
-    private static boolean pp_on = true;
-    private static boolean af_on = true;
-    private static boolean cons_on = true;
-    private static int num_linkages;
-    private static final StringBuffer input_string = new StringBuffer();
-    private static int label = GlobalBean.NOT_LABEL;
-    private static ParseOptions opts;
+    private static Sentence sent; // local
+    private static String dictionary_file = null; // nothing
+    private static String post_process_knowledge_file = null;// nothing
+    private static String constituent_knowledge_file = null; // nothing
+    private static String affix_file = null;   // nothing
+    private static boolean pp_on = true;     // nothing
+    private static boolean af_on = true;    // nothing
+    private static boolean cons_on = true;   // nothing
+    private static int num_linkages; // local
+    private static final StringBuffer input_string = new StringBuffer(); // local
+    private static int label = GlobalBean.NOT_LABEL; // local
+    private static ParseOptions opts; // local
 
     /**
      * Creates a new instance of Parser

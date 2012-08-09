@@ -7,6 +7,7 @@ import java.util.Comparator;
  * TODO add javadoc
  */
 public class ParseInfo {
+
     int x_table_size;
     XTableConnector x_table[];
     ParseSet parse_set;
@@ -188,7 +189,7 @@ public class ParseInfo {
         }
     }
 
-    DISNode build_DIS_CON_tree() {
+    DISNode build_DIS_CON_tree(Sentence sent) {
         int xw, w;
         DISNode dnroot, dn;
         CONList child, xchild;
@@ -226,7 +227,7 @@ public class ParseInfo {
         for (xw = 0; xw < N_words; xw++) {
             w = height_perm[xw].intValue();
             if (dfs_root_word[w] == -1) {
-                dn = build_DISNode(w);
+                dn = build_DISNode(w, sent);
                 if (dnroot == null) {
                     dnroot = dn;
                 } else {
@@ -307,7 +308,7 @@ public class ParseInfo {
             throw new RuntimeException("parse_set() called with cost < 0.");
         }
 
-        count = Sentence.tableLookup(lw, rw, le, re, cost);
+        count = sent.tableLookup(lw, rw, le, re, cost);
 
         /*
            * if(!(count >= 0)) { throw new RuntimeException(
@@ -343,7 +344,7 @@ public class ParseInfo {
                 return xt.set;
             } else {
                 w = lw + 1;
-                for (dis = Sentence.local_sent[w].d; dis != null; dis = dis.next) {
+                for (dis = sent.local_sent[w].d; dis != null; dis = dis.next) {
                     if (dis.left == null) {
                         rs[0] = parse_set(sent, dis, null, w, rw, dis.right,
                                 null, cost - 1, opts);
@@ -380,7 +381,7 @@ public class ParseInfo {
         }
 
         for (w = start_word; w <= end_word; w++) {
-            m1 = m = Sentence.formMatchList(w, le, lw, re, rw);
+            m1 = m = sent.formMatchList(w, le, lw, re, rw);
             for (; m != null; m = m.next) {
                 d = m.d;
                 for (lcost = 0; lcost <= cost; lcost++) {
@@ -580,7 +581,7 @@ public class ParseInfo {
         }
     }
 
-    static DISNode build_DISNode(int w) {
+    private DISNode build_DISNode(int w, Sentence sent) {
         /*
            * This node is connected to its parent via a fat link. Search the
            * region reachable via thin links, and put all reachable nodes with fat
@@ -590,11 +591,11 @@ public class ParseInfo {
         dn = new DISNode();
         dn.word = w; /* must do this before dfs so it knows the start word */
         dn.lol = null;
-        dn.cl = c_dfs(w, dn, null);
+        dn.cl = c_dfs(w, dn, null, sent);
         return dn;
     }
 
-    static CONList c_dfs(int w, DISNode start_dn, CONList c) {
+    private CONList c_dfs(int w, DISNode start_dn, CONList c, Sentence sent) {
 
         /*
            * Does a depth-first-search starting from w. Puts on the front of the
@@ -610,7 +611,7 @@ public class ParseInfo {
         ListOfLinks lol, lolx;
         if (dfs_root_word[w] != -1) {
             if (dfs_root_word[w] != start_dn.word) {
-                Sentence.structure_violation = true;
+                sent.structure_violation = true;
             }
             return c;
         }
@@ -618,21 +619,21 @@ public class ParseInfo {
         for (lol = word_links[w]; lol != null; lol = lol.next) {
             if (lol.dir < 0) { /* a backwards link */
                 if (dfs_root_word[lol.word] == -1) {
-                    Sentence.structure_violation = true;
+                    sent.structure_violation = true;
                 }
             } else if (lol.dir == 0) {
                 lolx = new ListOfLinks();
                 lolx.next = start_dn.lol;
                 lolx.link = lol.link;
                 start_dn.lol = lolx;
-                c = c_dfs(lol.word, start_dn, c);
+                c = c_dfs(lol.word, start_dn, c, sent);
             }
         }
         if (is_CON_word(w)) { /* if the current node is CON, put it first */
             cx = new CONList();
             cx.next = c;
             c = cx;
-            c.cn = build_CONNode(w);
+            c.cn = build_CONNode(w, sent);
         }
         return c;
     }
@@ -651,7 +652,7 @@ public class ParseInfo {
         return false;
     }
 
-    static CONNode build_CONNode(int w) {
+    private CONNode build_CONNode(int w, Sentence sent) {
         /* This word is a CON word (has fat links down). Build the tree for it. */
         ListOfLinks lol;
         CONNode a;
@@ -662,7 +663,7 @@ public class ParseInfo {
                 dx = new DISList();
                 dx.next = d;
                 d = dx;
-                d.dn = build_DISNode(lol.word);
+                d.dn = build_DISNode(lol.word, sent);
             }
         }
         a = new CONNode();

@@ -271,10 +271,10 @@ public class Linkage {
 
         sublinkage = new Sublinkage(pi);
         pi.build_digraph();
-        Sentence.structure_violation = false;
-        d_root = pi.build_DIS_CON_tree();
+        sent.structure_violation = false;
+        d_root = pi.build_DIS_CON_tree(sent);
 
-        if (Sentence.structure_violation) {
+        if (sent.structure_violation) {
             sent.computeLinkNames();
             for (i = 0; i < pi.N_links; i++) {
                 // TODO:

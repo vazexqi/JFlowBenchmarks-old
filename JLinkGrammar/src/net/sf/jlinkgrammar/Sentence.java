@@ -95,9 +95,9 @@ public class Sentence {
     public final int[] post_quote = new int[GlobalBean.MAX_SENTENCE];
     public PatchElement patch_array[];
 
-    public static Word local_sent[];
+    public Word local_sent[];
     // static boolean islands_ok;
-    public static boolean null_links;
+    public boolean null_links;
 
     public Sentence(String input_string, Dictionary dict, ParseOptions opts) {
 
@@ -1158,7 +1158,7 @@ public class Sentence {
      * @param rw index into word array of right word
      * @return the right match
      */
-    public static MatchNode formMatchList(int w, Connector lc, int lw, Connector rc, int rw) {
+    public MatchNode formMatchList(int w, Connector lc, int lw, Connector rc, int rw) {
         /* 
         */
         MatchNode ml, mr, mx, my, mz, front, free_later;
@@ -2672,11 +2672,11 @@ public class Sentence {
      * collection object stuff! sp that ctable size can not be modified
      * independently of ctable.
      */
-    public static int ctable_size;
+    private int ctable_size;
     /**
      * The TableConnector table associated with this sentence instance object
      */
-    public static TableConnector ctable[];
+    private TableConnector ctable[];
 
     /**
      * A piecewise exponential function determines the size of the hash table.
@@ -2724,7 +2724,7 @@ public class Sentence {
      * @see TableConnector#re
      * @see TableConnector#cost
      */
-    public static int tableLookup(int lw, int rw, Connector le, Connector re,
+    public int tableLookup(int lw, int rw, Connector le, Connector re,
                                   int cost) {
         /* returns the count for this quintuple if there, -1 otherwise */
         TableConnector t = tablePointer(lw, rw, le, re, cost);
@@ -2748,7 +2748,7 @@ public class Sentence {
      * @see TableConnector#re
      * @see TableConnector#cost
      */
-    public static int hash(int lw, int rw, Connector le, Connector re, int cost) {
+    private int hash(int lw, int rw, Connector le, Connector re, int cost) {
         int i;
         i = 0;
 
@@ -2758,15 +2758,15 @@ public class Sentence {
                 + MyRandom.randtable[(rw + i) & (GlobalBean.RTSIZE - 1)];
         i = i
                 + (i << 1)
-                + MyRandom.randtable[(((le == null ? 0 : le.hashCode()) + i) % (Sentence.ctable_size + 1))
+                + MyRandom.randtable[(((le == null ? 0 : le.hashCode()) + i) % (ctable_size + 1))
                 & (GlobalBean.RTSIZE - 1)];
         i = i
                 + (i << 1)
-                + MyRandom.randtable[(((re == null ? 0 : re.hashCode()) + i) % (Sentence.ctable_size + 1))
+                + MyRandom.randtable[(((re == null ? 0 : re.hashCode()) + i) % (ctable_size + 1))
                 & (GlobalBean.RTSIZE - 1)];
         i = i + (i << 1)
                 + MyRandom.randtable[(cost + i) & (GlobalBean.RTSIZE - 1)];
-        return i & (Sentence.ctable_size - 1);
+        return i & (ctable_size - 1);
     }
 
     /**
@@ -2782,11 +2782,11 @@ public class Sentence {
      * @see TableConnector#re
      * @see TableConnector#cost
      */
-    public static TableConnector tablePointer(int lw, int rw, Connector le,
+    private TableConnector tablePointer(int lw, int rw, Connector le,
                                               Connector re, int cost) {
         /* returns the pointer to this info, null if not there */
         TableConnector t;
-        t = Sentence.ctable[hash(lw, rw, le, re, cost)];
+        t = ctable[hash(lw, rw, le, re, cost)];
         for (; t != null; t = t.next) {
             if ((t.lw == lw) && (t.rw == rw) && (t.le == le) && (t.re == re)
                     && (t.cost == cost))
@@ -2814,7 +2814,7 @@ public class Sentence {
      * @see TableConnector#next
      * @see #initTable
      */
-    public static TableConnector tableStore(int lw, int rw, Connector le,
+    private TableConnector tableStore(int lw, int rw, Connector le,
                                             Connector re, int cost, int count) {
         /* Stores the value in the table. Assumes it's not already there */
         TableConnector t, n;
@@ -2834,9 +2834,9 @@ public class Sentence {
         return n;
     }
 
-    public static int match_cost;
+    private int match_cost;
 
-    public static final int[] match_l_table_size = new int[GlobalBean.MAX_SENTENCE]; /*
+    private final int[] match_l_table_size = new int[GlobalBean.MAX_SENTENCE]; /*
 																				 * the
 																				 * sizes
 																				 * of
@@ -2844,11 +2844,11 @@ public class Sentence {
 																				 * hash
 																				 * tables
 																				 */
-    public static final int[] match_r_table_size = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] match_r_table_size = new int[GlobalBean.MAX_SENTENCE];
 
     /* the beginnings of the hash tables */
-    public static final MatchNode[][] match_l_table = new MatchNode[GlobalBean.MAX_SENTENCE][];
-    public static final MatchNode[][] match_r_table = new MatchNode[GlobalBean.MAX_SENTENCE][];
+    private final MatchNode[][] match_l_table = new MatchNode[GlobalBean.MAX_SENTENCE][];
+    private final MatchNode[][] match_r_table = new MatchNode[GlobalBean.MAX_SENTENCE][];
 
     public void initFastMatcher() {
         int w, len, size, i;
@@ -3287,14 +3287,14 @@ public class Sentence {
         num_valid_linkages = N_valid_linkages;
     }
 
-    public static boolean structure_violation;
+    public boolean structure_violation;
     /* The following three functions are all for computing the cost of and lists */
-    public static final boolean[] visited = new boolean[GlobalBean.MAX_SENTENCE];
-    public static final int[] and_element_sizes = new int[GlobalBean.MAX_SENTENCE];
-    public static final int[] and_element = new int[GlobalBean.MAX_SENTENCE];
-    public static int N_and_elements;
-    public static final int[] outside_word = new int[GlobalBean.MAX_SENTENCE];
-    public static int N_outside_words;
+    private final boolean[] visited = new boolean[GlobalBean.MAX_SENTENCE];
+    private final int[] and_element_sizes = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] and_element = new int[GlobalBean.MAX_SENTENCE];
+    private int N_and_elements;
+    private final int[] outside_word = new int[GlobalBean.MAX_SENTENCE];
+    private int N_outside_words;
 
     /**
      * Patches up appropriate links in the patch_array for this DISNode and this
@@ -3387,7 +3387,7 @@ public class Sentence {
         postprocessor = dict.postprocessor;
         pi.build_digraph();
         structure_violation = false;
-        d_root = pi.build_DIS_CON_tree(); /* may set structure_violation to true */
+        d_root = pi.build_DIS_CON_tree(this); /* may set structure_violation to true */
 
         li.N_violations = 0;
         li.improper_fat_linkage = structure_violation;
@@ -4219,10 +4219,10 @@ public class Sentence {
     }
 
     /* TRUE if this word has a fat down link, FALSE otherise */
-    public static final boolean[] has_fat_down = new boolean[GlobalBean.MAX_SENTENCE];
+    private final boolean[] has_fat_down = new boolean[GlobalBean.MAX_SENTENCE];
 
     /* points to the image structure for each word. null if not a fat word. */
-    public static final ImageNode[] image_array = new ImageNode[GlobalBean.MAX_SENTENCE];
+    private final ImageNode[] image_array = new ImageNode[GlobalBean.MAX_SENTENCE];
 
     /*
 	 * The following routines' purpose is to eliminate all but the canonical
@@ -4405,7 +4405,7 @@ public class Sentence {
                 cleanUpExpressions(w);
                 /* gets rid of XNodes with null exp */
                 for (x = word[w].x; x != null; x = x.next) {
-                    x.exp.insert_connectors('+');
+                    x.exp.insert_connectors('+',this);
                 }
             }
 
@@ -4428,7 +4428,7 @@ public class Sentence {
                 cleanUpExpressions(w);
                 /* gets rid of XNodes with null exp */
                 for (x = word[w].x; x != null; x = x.next) {
-                    x.exp.insert_connectors('-');
+                    x.exp.insert_connectors('-',this);
                 }
             }
 
@@ -4460,17 +4460,17 @@ public class Sentence {
         opts.out.println();
     }
 
-    public static int s_table_size;
-    public static Connector table[];
+    private int s_table_size;
+    private Connector table[];
 
-    public static void zeroS() {
+    private void zeroS() {
         int i;
         for (i = 0; i < s_table_size; i++) {
             table[i] = null;
         }
     }
 
-    public static void freeS() {
+    private void freeS() {
         /* This function removes all connectors from the set S */
         int i;
         for (i = 0; i < s_table_size; i++) {
@@ -4481,7 +4481,7 @@ public class Sentence {
     /**
      * @param c
      */
-    public static void insertS(Connector c) {
+    public void insertS(Connector c) {
         /*
 		 * this function puts a copy of c into S if one like it isn't already
 		 * there
@@ -4510,7 +4510,7 @@ public class Sentence {
      * @param c
      * @return the hash of the connector
      */
-    public static int hashS(Connector c) {
+    private int hashS(Connector c) {
         /* 
         */
         String s;
@@ -5344,22 +5344,22 @@ public class Sentence {
         return count;
     }
 
-    public static int power_cost;
+    private int power_cost;
     /* either GENTLE or RUTHLESS */
     /* obviates excessive paramater passing */
-    public static int power_prune_mode;
+    private int power_prune_mode;
     /*
 	 * counts the number of changes of c.word fields in a pass
 	 */
-    public static int N_changed;
+    private int N_changed;
 
     /* the sizes of the hash tables */
-    public static final int[] power_l_table_size = new int[GlobalBean.MAX_SENTENCE];
-    public static final int[] power_r_table_size = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] power_l_table_size = new int[GlobalBean.MAX_SENTENCE];
+    private final int[] power_r_table_size = new int[GlobalBean.MAX_SENTENCE];
 
     /* the beginnings of the hash tables */
-    public static final CList[][] power_l_table = new CList[GlobalBean.MAX_SENTENCE][];
-    public static final CList[][] power_r_table = new CList[GlobalBean.MAX_SENTENCE][];
+    private final CList[][] power_l_table = new CList[GlobalBean.MAX_SENTENCE][];
+    private final CList[][] power_r_table = new CList[GlobalBean.MAX_SENTENCE][];
 
     /**
      * Here is what you've been waiting for: POWER-PRUNE
@@ -6008,8 +6008,8 @@ public class Sentence {
 	 * observation will only obviate the need for the last pass.)
 	 */
 
-    public final static int CMS_SIZE = (2 << 10);
-    public static final Cms[] cms_table = new Cms[CMS_SIZE];
+    private final static int CMS_SIZE = (2 << 10);
+    public final Cms[] cms_table = new Cms[CMS_SIZE];
 
     public void initCmsTable() {
         int i;
