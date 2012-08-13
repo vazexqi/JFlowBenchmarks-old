@@ -229,8 +229,6 @@ public class Dictionary {
 
         left_wall_defined = boolean_dictionary_lookup(GlobalBean.LEFT_WALL_WORD);
         right_wall_defined = boolean_dictionary_lookup(GlobalBean.RIGHT_WALL_WORD);
-        postprocessor = post_process_open(opts, name, pp_name);
-        constituent_pp = post_process_open(opts, name, cons_name);
 
         affix_table = null;
         if (affix_name != null) {
@@ -238,6 +236,8 @@ public class Dictionary {
                     dict_name);
         }
 
+        postprocessor = (post_process_open(opts, name, pp_name));
+        constituent_pp = (post_process_open(opts, name, cons_name));
         unknown_word_defined = boolean_dictionary_lookup(GlobalBean.UNKNOWN_WORD);
         use_unknown_word = true;
         capitalized_word_defined = boolean_dictionary_lookup(GlobalBean.PROPER_WORD);

@@ -10,7 +10,8 @@ public class MyRandom {
 	private static final ThreadLocal<Integer[]> random_state = new ThreadLocal<Integer[]>();
 	private static ThreadLocal<Integer> random_count = new ThreadLocal<Integer>();
 	private static ThreadLocal<Boolean> random_inited = new ThreadLocal<Boolean>();
-    static{
+
+    static void my_random_init_init(){
         random_count.set(0);
         random_inited.set(false);
         random_state.set(new Integer[2]);

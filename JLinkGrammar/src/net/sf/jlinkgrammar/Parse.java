@@ -26,10 +26,10 @@ public class Parse {
      * @param args the command line arguments
      */
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         long startTime = System.currentTimeMillis();
         Parser.doIt(args);
-        //System.out.println(System.currentTimeMillis() - startTime);
+        System.out.println(System.currentTimeMillis() - startTime);
     }
 
 }

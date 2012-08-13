@@ -7,10 +7,9 @@ package net.sf.jlinkgrammar;
  *
  */
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.concurrent.*;
 
 /**
  * This class is meant to be a bean type interface to link grammar. All the
@@ -20,8 +19,7 @@ import java.io.PrintStream;
  */
 public class Parser {
 
-    private static Dictionary dict;
-    private static Sentence sent; // local
+    private static ThreadLocal<Dictionary> dict = new ThreadLocal<Dictionary>();
     private static String dictionary_file = null; // nothing
     private static String post_process_knowledge_file = null;// nothing
     private static String constituent_knowledge_file = null; // nothing
@@ -29,10 +27,10 @@ public class Parser {
     private static boolean pp_on = true;     // nothing
     private static boolean af_on = true;    // nothing
     private static boolean cons_on = true;   // nothing
-    private static int num_linkages; // local
-    private static final StringBuffer input_string = new StringBuffer(); // local
-    private static int label = GlobalBean.NOT_LABEL; // local
-    private static ParseOptions opts; // local
+    private static ParseOptions opts; //
+    private static ArrayList<StringBuffer> sentences;
+    private static final int concurrencyLevel = Runtime.getRuntime().availableProcessors();
+    private static final CountDownLatch cdl = new CountDownLatch(1);
 
     /**
      * Creates a new instance of Parser
@@ -90,6 +88,12 @@ public class Parser {
                         print_usage(arg[0]);
                     try {
                         opts.input = new FileInputStream(arg[i + 1]);
+                        sentences = new ArrayList<StringBuffer>();
+                        String line;
+                        BufferedReader br = new BufferedReader(new FileReader(arg[i+1]));
+                        while((line = br.readLine()) != null) {
+                            sentences.add(new StringBuffer(line));
+                        }
                     } catch (IOException ex) {
                         // TODO - Do something
                     }
@@ -154,9 +158,9 @@ public class Parser {
         }
 
         try {
-            dict = new Dictionary(opts, dictionary_file,
+            dict.set( new Dictionary(opts, dictionary_file,
                     post_process_knowledge_file, constituent_knowledge_file,
-                    affix_file);
+                    affix_file));
         } catch (IOException ex) {
             // TODO - Do something
         }
@@ -168,13 +172,13 @@ public class Parser {
                 i++;
             } else if (arg[i].charAt(0) == '-' && !arg[i].equals("-ppoff")
                     && !arg[i].equals("-coff") && !arg[i].equals("-aoff")) {
-                opts.issueSpecialCommand(arg[i].substring(1), dict);
+                opts.issueSpecialCommand(arg[i].substring(1), dict.get());
             }
         }
 
     }
 
-    public static void doIt(String arg[]) throws IOException {
+    public static void doIt(String arg[]) throws IOException, InterruptedException {
 
         InitializeVars(arg);
         opts.setDisjunctCost(2);
@@ -182,70 +186,80 @@ public class Parser {
         opts.setMaxNullCount(0);
         opts.resetResources();
 
-        /*
-           * This section is a simple example of the API for those trying to
-           * figure out how to incorporate it into their own program. Un-comment
-           * it to see the results
-           */
-        /*{
-            String testString = "Which camera is small?"; // a simple test
-            // sentence
-            String testString2 = "Which camera is best?"; // a simple test
-            // sentence with a
-            // null
-            int rWordIndex;
-            int lWordIndex;
-            String leftWord;
-            String rightWord;
-            String linkLabel;
+        ExecutorService executor = Executors.newFixedThreadPool(concurrencyLevel);
+        Thread threads[]  = new Thread[concurrencyLevel];
+        int quota = sentences.size() / concurrencyLevel;
+        int startIndex = 0, endIndex = quota-1;
+        for(int i=0; i < concurrencyLevel; i++){
+            executor.submit(new Task(startIndex, endIndex));
+//            threads[i]= new Thread(new Task(startIndex,endIndex));
+//            threads[i].start();
+            cdl.await();
+            startIndex = endIndex+1;
+            endIndex += (quota < (sentences.size()-startIndex)) ? quota : sentences.size()-startIndex;
 
-            // Set up a quick test
-            sent = new Sentence(testString, dict, opts);
-            // First parse with cost 0 or 1 and no null links
-
-            num_linkages = sent.sentenceParse(opts);
-            if (num_linkages == 0) {
-                // O.K. we have a null link (i.e. word without a link)
-                // so allow one and try again
-                opts.setMinNullCount(1);
-                opts.setMaxNullCount(sent.sentenceLength());
-                num_linkages = sent.sentenceParse(opts);
-            }
-
-            *//*
-                * This is an example of the API uncomment it to see it work. //
-                * Normally you loop over linkages, here we only choose the first
-                * Linkage myLinkage = new Linkage(0, sent, opts); // Normally you
-                * loop through sublinkages int n =
-                * myLinkage.linkage_get_num_sublinkages(); // Only choose the first
-                * sublinkage myLinkage.linkage_set_current_sublinkage(0); int
-                * numLinks = myLinkage.linkage_get_num_links();
-                *
-                * for (int linkIndex = 0; linkIndex < numLinks; linkIndex++) {
-                * rWordIndex = myLinkage.linkage_get_link_rword(linkIndex);
-                * lWordIndex = myLinkage.linkage_get_link_lword(linkIndex);
-                * rightWord = myLinkage.word[rWordIndex]; leftWord =
-                * myLinkage.word[lWordIndex]; linkLabel =
-                * myLinkage.linkage_get_link_label(linkIndex);
-                * opts.out.println(leftWord + "---" + linkLabel + "---" +
-                * rightWord);
-                *
-                * }
-                *//*
-        }*/
+        }
+//        for(int i=0; i < concurrencyLevel; i++){
+//            threads[i].join();
+//        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         /*
            * This is the standard command line parser reading from the standard
            * input and displaying on the standard output.
            */
-        while (GlobalBean.fgetInputString(input_string, opts.input, opts.out,
-                opts)) {
+
+        if (opts.getBatchMode()) {
+            //opts.printTime("Total");
+            opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
+        }
+    }
+    static class Task implements Runnable{
+        final int start, end;
+
+        Task(final int start, final int end){
+            this.start = start;
+            this.end = end;
+        }
+
+        @Override
+        public void run() {
+            try {
+
+                mainLoop(start, end);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void mainLoop(final int start, final int end) throws IOException, BrokenBarrierException, InterruptedException {
+        int label = GlobalBean.NOT_LABEL;
+        StringBuffer input_string;
+        Sentence sent;
+        int num_linkages;
+        MyRandom.my_random_init_init();
+
+        dict.set(new Dictionary(opts, dictionary_file,
+                post_process_knowledge_file, constituent_knowledge_file,
+                affix_file));
+
+
+        for(int i=start; i <= end; i++) {
+            if (!opts.getBatchMode() && opts.verbosity > 0)
+                opts.out.println("linkparser> ");
+            input_string = sentences.get(i);
             if (input_string.length() == 0) {
                 continue;
             }
             if (input_string.equals("quit\n") || input_string.equals("exit\n"))
                 break;
-            if (GlobalBean.specialCommand(input_string, dict, opts))
+            if (GlobalBean.specialCommand(input_string, dict.get(), opts))
                 continue;
             if (opts.getEchoOn()) {
                 opts.out.println(input_string);
@@ -255,7 +269,7 @@ public class Parser {
                 label = GlobalBean.stripOffLabel(input_string);
             }
 
-            sent = new Sentence(input_string.toString(), dict, opts);
+            sent = new Sentence(input_string.toString(), dict.get(), opts);
             if (sent.sentenceLength() > opts
                     .getMaxSentenceLength()) {
                 if (opts.verbosity > 0) {
@@ -286,6 +300,7 @@ public class Parser {
 
             //opts.printTotalTime();
             if (opts.getBatchMode()) {
+                cdl.countDown();
                 GlobalBean.batchProcessSomeLinkages(label, sent, opts);
             } else {
                 GlobalBean.processSomeLinkages(sent, opts);
@@ -293,10 +308,6 @@ public class Parser {
 
         }
 
-        if (opts.getBatchMode()) {
-            //opts.printTime("Total");
-            opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
-        }
     }
 
     /**
