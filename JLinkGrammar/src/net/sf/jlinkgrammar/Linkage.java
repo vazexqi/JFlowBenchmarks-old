@@ -884,8 +884,8 @@ public class Linkage {
         return ps_string;
     }
 
-    private static final char[][] picture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
-    private static final char[][] xpicture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
+    private final char[][] picture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
+    private final char[][] xpicture = new char[GlobalBean.MAX_HEIGHT][GlobalBean.MAX_LINE];
 
     public void set_centers(boolean print_word_0) {
         int i, len, tot;
@@ -1103,6 +1103,7 @@ public class Linkage {
                     xpicture[row + 2][k] = picture[row][k];
                     k++;
                 }
+                xpicture[row+2][k] = '\0';  // previously missing this, so printed left out characters in the array
             }
             top_row = top_row + 2;
         } else {
