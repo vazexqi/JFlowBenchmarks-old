@@ -38,8 +38,7 @@ public class Disjunct {
         return d1;
     }
 
-    static int dup_table_size;
-    static Disjunct dup_table[];
+    private static ThreadLocal<Integer> dup_table_size = new ThreadLocal<Integer>();
 
     static Disjunct eliminate_duplicate_disjuncts(ParseOptions opts, Disjunct d) {
         /*
@@ -49,10 +48,11 @@ public class Disjunct {
            */
         int i, h, count;
         Disjunct dn, dx;
+        Disjunct dup_table[];
         count = 0;
-        dup_table_size = MyRandom.next_power_of_two_up(2 * count_disjuncts(d));
-        dup_table = new Disjunct[dup_table_size];
-        for (i = 0; i < dup_table_size; i++)
+        dup_table_size.set(MyRandom.next_power_of_two_up(2 * count_disjuncts(d)));
+        dup_table = new Disjunct[dup_table_size.get()];
+        for (i = 0; i < dup_table_size.get(); i++)
             dup_table[i] = null;
         while (d != null) {
             dn = d.next;
@@ -74,7 +74,7 @@ public class Disjunct {
             d = dn;
         }
         /* d is already null */
-        for (i = 0; i < dup_table_size; i++) {
+        for (i = 0; i < dup_table_size.get(); i++) {
             for (dn = dup_table[i]; dn != null; dn = dx) {
                 dx = dn.next;
                 dn.next = d;
@@ -146,7 +146,7 @@ public class Disjunct {
                     + (i << 1)
                     + MyRandom.randtable[(s.charAt(j) + i)
                     & (GlobalBean.RTSIZE - 1)];
-        return (i & (dup_table_size - 1));
+        return (i & (dup_table_size.get() - 1));
     }
 
     boolean disjunct_types_equal(Disjunct d2) {
