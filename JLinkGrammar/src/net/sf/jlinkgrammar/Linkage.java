@@ -334,8 +334,8 @@ public class Linkage {
                 if (sent.patch_array[i].changed || sent.patch_array[i].used) {
                     sublinkage.link[i].l = sent.patch_array[i].newl;
                     sublinkage.link[i].r = sent.patch_array[i].newr;
-                } else if ((ParseInfo.dfs_root_word[pi.link_array[i].l] != -1)
-                        && (ParseInfo.dfs_root_word[pi.link_array[i].r] != -1)) {
+                } else if ((pi.dfs_root_word[pi.link_array[i].l] != -1)
+                        && (pi.dfs_root_word[pi.link_array[i].r] != -1)) {
                     sublinkage.link[i].l = -1;
                 }
             }

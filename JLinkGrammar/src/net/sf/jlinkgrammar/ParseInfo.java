@@ -638,7 +638,7 @@ public class ParseInfo {
         return c;
     }
 
-    static boolean is_CON_word(int w) {
+    private boolean is_CON_word(int w) {
         /*
            * Returns true if there is at least one fat link pointing out of this
            * word.
@@ -672,7 +672,7 @@ public class ParseInfo {
         return a;
     }
 
-    static final ListOfLinks[] word_links = new ListOfLinks[GlobalBean.MAX_SENTENCE]; /*
+    final ListOfLinks[] word_links = new ListOfLinks[GlobalBean.MAX_SENTENCE]; /*
 																				 * ptr
 																				 * to
 																				 * l
@@ -685,19 +685,19 @@ public class ParseInfo {
 																				 * of
 																				 * word
 																				 */
-    static final int[] dfs_root_word = new int[GlobalBean.MAX_SENTENCE]; /*
+    final int[] dfs_root_word = new int[GlobalBean.MAX_SENTENCE]; /*
 																	 * for the
 																	 * depth
 																	 * -first
 																	 * search
 																	 */
-    static final int[] dfs_height = new int[GlobalBean.MAX_SENTENCE]; /*
+    private final int[] dfs_height = new int[GlobalBean.MAX_SENTENCE]; /*
 																 * to determine
 																 * the order to
 																 * do the root
 																 * word dfs
 																 */
-    static final Integer[] height_perm = new Integer[GlobalBean.MAX_SENTENCE]; /*
+    private final Integer[] height_perm = new Integer[GlobalBean.MAX_SENTENCE]; /*
 																		 * permute
 																		 * the
 																		 * vertices

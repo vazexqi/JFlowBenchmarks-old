@@ -171,7 +171,7 @@ public class Dictionary {
     /* a pointer to the temporary lookup list */
     DictNode lookup_list = null;
 
-    static boolean rand_table_inited = false;
+    private boolean rand_table_inited = false;
 
     /**
      * This is the dictionary_create function cast as a java object constructor
@@ -1709,8 +1709,8 @@ public class Dictionary {
         return dn;
     }
 
-    static final StringBuffer current_name = new StringBuffer("AAAAAAAA");
-    static final int CN_size = current_name.length();
+    final StringBuffer current_name = new StringBuffer("AAAAAAAA");
+    final int CN_size = current_name.length();
 
     /*
       * This set of 10 characters are the ones defining the syntax of the

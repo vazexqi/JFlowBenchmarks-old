@@ -3341,7 +3341,7 @@ public class Sentence {
     public void fillPatchArrayCon(CONNode cn, LinksToPatch ltp) {
         ListOfLinks lol;
         LinksToPatch ltpx;
-        for (lol = ParseInfo.word_links[cn.word]; lol != null; lol = lol.next) {
+        for (lol = parse_info.word_links[cn.word]; lol != null; lol = lol.next) {
             if (lol.dir == 0) {
                 ltpx = new LinksToPatch();
                 ltpx.next = ltp;
@@ -3437,8 +3437,8 @@ public class Sentence {
                     sublinkage.link[i].l = patch_array[i].newl;
                     sublinkage.link[i].r = patch_array[i].newr;
                 } else {
-                    if ((ParseInfo.dfs_root_word[pi.link_array[i].l] != -1)
-                            && (ParseInfo.dfs_root_word[pi.link_array[i].r] != -1)) {
+                    if ((pi.dfs_root_word[pi.link_array[i].l] != -1)
+                            && (pi.dfs_root_word[pi.link_array[i].r] != -1)) {
                         sublinkage.link[i].l = -1;
                     }
                 }
@@ -3862,7 +3862,7 @@ public class Sentence {
         if (visited[w])
             return;
         visited[w] = true;
-        for (lol = ParseInfo.word_links[w]; lol != null; lol = lol.next) {
+        for (lol = parse_info.word_links[w]; lol != null; lol = lol.next) {
             if (lol.dir == 1) {
                 /* we only consider UP or DOWN priority links here */
 
@@ -3890,7 +3890,7 @@ public class Sentence {
         visited[w] = true;
         and_element_sizes[N_and_elements]++;
 
-        for (lol = ParseInfo.word_links[w]; lol != null; lol = lol.next) {
+        for (lol = parse_info.word_links[w]; lol != null; lol = lol.next) {
             if (lol.dir >= 0) {
                 andDfsFull(lol.word);
             }
