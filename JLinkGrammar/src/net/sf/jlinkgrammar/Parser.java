@@ -90,8 +90,8 @@ public class Parser {
                         opts.input = new FileInputStream(arg[i + 1]);
                         sentences = new ArrayList<StringBuffer>();
                         String line;
-                        BufferedReader br = new BufferedReader(new FileReader(arg[i+1]));
-                        while((line = br.readLine()) != null) {
+                        BufferedReader br = new BufferedReader(new FileReader(arg[i + 1]));
+                        while ((line = br.readLine()) != null) {
                             sentences.add(new StringBuffer(line));
                         }
                     } catch (IOException ex) {
@@ -158,7 +158,7 @@ public class Parser {
         }
 
         try {
-            dict.set( new Dictionary(opts, dictionary_file,
+            dict.set(new Dictionary(opts, dictionary_file,
                     post_process_knowledge_file, constituent_knowledge_file,
                     affix_file));
         } catch (IOException ex) {
@@ -187,56 +187,65 @@ public class Parser {
         opts.resetResources();
 
         ExecutorService executor = Executors.newFixedThreadPool(concurrencyLevel);
-        Thread threads[]  = new Thread[concurrencyLevel];
+        Thread threads[] = new Thread[concurrencyLevel];
         int quota = sentences.size() / concurrencyLevel;
-        int startIndex = 0, endIndex = quota-1;
-        for(int i=0; i < concurrencyLevel; i++){
-            executor.submit(new Task(startIndex, endIndex));
-//            threads[i]= new Thread(new Task(startIndex,endIndex));
-//            threads[i].start();
+        int startIndex = 0, endIndex = quota - 1;
+        for (int i = 0; i < concurrencyLevel; i++) {
+//            executor.submit(new Task(startIndex, endIndex));
+            threads[i] = new Thread(new Task(startIndex, endIndex));
+            threads[i].start();
             cdl.await();
-            startIndex = endIndex+1;
-            endIndex += (quota < (sentences.size()-startIndex)) ? quota : sentences.size()-startIndex;
+            startIndex = endIndex + 1;
+            if (i == concurrencyLevel - 2) {
+                endIndex += sentences.size() - startIndex;
+            } else {
+                endIndex += quota;
+            }
 
         }
-//        for(int i=0; i < concurrencyLevel; i++){
-//            threads[i].join();
-//        }
-        executor.shutdown();
+        for (int i = 0; i < concurrencyLevel; i++) {
+            threads[i].join();
+        }
+//        executor.shutdown();
+//        try {
+//            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//    }
+
+
+    /*
+    * This is the standard command line parser reading from the standard
+    * input and displaying on the standard output.
+    */
+
+    if(opts.getBatchMode())
+
+    {
+        //opts.printTime("Total");
+        opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
+    }
+}
+
+static class Task implements Runnable {
+    final int start, end;
+
+    Task(final int start, final int end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    public void run() {
         try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
+
+            mainLoop(start, end);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        /*
-           * This is the standard command line parser reading from the standard
-           * input and displaying on the standard output.
-           */
-
-        if (opts.getBatchMode()) {
-            //opts.printTime("Total");
-            opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
-        }
     }
-    static class Task implements Runnable{
-        final int start, end;
 
-        Task(final int start, final int end){
-            this.start = start;
-            this.end = end;
-        }
-
-        @Override
-        public void run() {
-            try {
-
-                mainLoop(start, end);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+}
 
     private static void mainLoop(final int start, final int end) throws IOException, BrokenBarrierException, InterruptedException {
         int label = GlobalBean.NOT_LABEL;
@@ -250,7 +259,7 @@ public class Parser {
                 affix_file));
 
 
-        for(int i=start; i <= end; i++) {
+        for (int i = start; i <= end; i++) {
             if (!opts.getBatchMode() && opts.verbosity > 0)
                 opts.out.println("linkparser> ");
             input_string = sentences.get(i);
