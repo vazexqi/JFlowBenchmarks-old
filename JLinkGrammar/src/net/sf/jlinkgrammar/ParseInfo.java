@@ -350,7 +350,7 @@ public class ParseInfo {
                                 null, cost - 1, opts);
                         if (rs[0] == null)
                             continue;
-                        a_choice = new ParseChoice(ParseSet.dummy_set, lw, w,
+                        a_choice = new ParseChoice(new ParseSet(1, null), lw, w,
                                 null, null, rs[0], w, rw, null, null, null,
                                 null, null);
                         xt.set.put_choice_in_set(a_choice);
@@ -359,7 +359,7 @@ public class ParseInfo {
                 rs[0] = parse_set(sent, null, null, w, rw, null, null,
                         cost - 1, opts);
                 if (rs[0] != null) {
-                    a_choice = new ParseChoice(ParseSet.dummy_set, lw, w, null,
+                    a_choice = new ParseChoice(new ParseSet(1, null), lw, w, null,
                             null, rs[0], w, rw, null, null, null, null, null);
                     xt.set.put_choice_in_set(a_choice);
                 }

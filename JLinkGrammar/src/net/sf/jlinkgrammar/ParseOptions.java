@@ -1,5 +1,6 @@
 package net.sf.jlinkgrammar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Comparator;
@@ -173,6 +174,9 @@ public class ParseOptions {
      */
     public PrintStream out;
 
+    public ByteArrayOutputStream outStream;
+
+
     /**
      * Here's where the values are initialized
      * <ul>
@@ -237,8 +241,43 @@ public class ParseOptions {
         display_constituents = 0;
         display_bad = false;
         display_links = false;
-        out = System.out;
+        outStream = new ByteArrayOutputStream();
+        out = new PrintStream(outStream);
         input = System.in;
+
+    }
+    public ParseOptions(ParseOptions opts){
+        this.verbosity=opts.verbosity;
+        this.linkage_limit=opts.linkage_limit;
+        this.disjunct_cost=opts.disjunct_cost;
+        this.min_null_count=opts.min_null_count;
+        this.max_null_count=opts.max_null_count;
+        this.null_block=opts.null_block;
+        this.islands_ok=opts.islands_ok;
+        this.cost_model=new VDALCostModel();
+        this.short_length = opts.short_length;
+        this.all_short=opts.all_short;
+        this.twopass_length=opts.twopass_length;
+        max_sentence_length = 70;
+        this.resources=new Resources();
+        this.display_short=opts.display_short;
+        this.display_word_subscripts=opts.display_word_subscripts;
+        this.display_link_subscripts=opts.display_link_subscripts;
+        this.display_walls=opts.display_walls;
+        this.display_union=opts.display_union;
+        this.allow_null=opts.allow_null;
+        this.echo_on=opts.echo_on;
+        this.batch_mode=opts.batch_mode;
+        this.screen_width=opts.screen_width;
+        this.display_on=opts.display_on;
+        this.display_postscript=opts.display_postscript;
+        this.display_constituents=opts.display_constituents;
+        this.display_bad=opts.display_bad;
+        this.display_links=opts.display_links;
+        this.outStream=new ByteArrayOutputStream();
+        this.out=new PrintStream(this.outStream);
+        this.input=System.in;
+
     }
 
     public void costModelType(ParseOptions opts, int cm) {

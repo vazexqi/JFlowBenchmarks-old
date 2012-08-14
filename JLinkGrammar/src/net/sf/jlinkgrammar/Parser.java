@@ -10,6 +10,7 @@ package net.sf.jlinkgrammar;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class is meant to be a bean type interface to link grammar. All the
@@ -31,7 +32,8 @@ public class Parser {
     private static ArrayList<StringBuffer> sentences;
     private static final int concurrencyLevel = Runtime.getRuntime().availableProcessors();
     private static final CountDownLatch cdl = new CountDownLatch(1);
-
+    private static volatile int orderCounter = 0;
+    private static AtomicInteger counter = new AtomicInteger(0);
     /**
      * Creates a new instance of Parser
      */
@@ -192,7 +194,12 @@ public class Parser {
         int startIndex = 0, endIndex = quota - 1;
         for (int i = 0; i < concurrencyLevel; i++) {
 //            executor.submit(new Task(startIndex, endIndex));
-            threads[i] = new Thread(new Task(startIndex, endIndex));
+            if(i == 0){
+                threads[i] = new Thread(new Task(startIndex, endIndex,i,opts, true));
+            }
+            else{
+                threads[i] = new Thread(new Task(startIndex, endIndex,i,opts));
+            }
             threads[i].start();
             cdl.await();
             startIndex = endIndex + 1;
@@ -214,6 +221,7 @@ public class Parser {
 //    }
 
 
+
     /*
     * This is the standard command line parser reading from the standard
     * input and displaying on the standard output.
@@ -223,23 +231,33 @@ public class Parser {
 
     {
         //opts.printTime("Total");
-        opts.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
+        //System.out.println("" + GlobalBean.batchErrors.get() + " error" + ((GlobalBean.batchErrors.get() == 1) ? "" : "s") + ".");
     }
 }
 
 static class Task implements Runnable {
-    final int start, end;
+    final int start, end, myNum;
+    ParseOptions opts;
 
-    Task(final int start, final int end) {
+    Task(final int start, final int end, final int myNum,ParseOptions opts) {
         this.start = start;
         this.end = end;
+        this.myNum = myNum;
+        this.opts=new ParseOptions(opts);
+    }
+
+    Task(final int start, final int end, final int myNum, ParseOptions opts, boolean dummy){
+        this.start = start;
+        this.end = end;
+        this.myNum = myNum;
+        this.opts = opts;
     }
 
     @Override
     public void run() {
         try {
 
-            mainLoop(start, end);
+            mainLoop(start, end,myNum,this.opts);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -247,7 +265,7 @@ static class Task implements Runnable {
 
 }
 
-    private static void mainLoop(final int start, final int end) throws IOException, BrokenBarrierException, InterruptedException {
+    private static void mainLoop(final int start, final int end, final int myNum, ParseOptions opts) throws IOException, BrokenBarrierException, InterruptedException {
         int label = GlobalBean.NOT_LABEL;
         StringBuffer input_string;
         Sentence sent;
@@ -258,11 +276,11 @@ static class Task implements Runnable {
                 post_process_knowledge_file, constituent_knowledge_file,
                 affix_file));
 
-
         for (int i = start; i <= end; i++) {
             if (!opts.getBatchMode() && opts.verbosity > 0)
                 opts.out.println("linkparser> ");
             input_string = sentences.get(i);
+
             if (input_string.length() == 0) {
                 continue;
             }
@@ -279,8 +297,7 @@ static class Task implements Runnable {
             }
 
             sent = new Sentence(input_string.toString(), dict.get(), opts);
-            if (sent.sentenceLength() > opts
-                    .getMaxSentenceLength()) {
+            if (sent.sentenceLength() > opts.getMaxSentenceLength()) {
                 if (opts.verbosity > 0) {
                     opts.out.println("Sentence length ("
                             + sent.sentenceLength()
@@ -306,17 +323,21 @@ static class Task implements Runnable {
                     num_linkages = sent.sentenceParse(opts);
                 }
             }
-
             //opts.printTotalTime();
             if (opts.getBatchMode()) {
                 cdl.countDown();
                 GlobalBean.batchProcessSomeLinkages(label, sent, opts);
+                counter.getAndIncrement();
             } else {
                 GlobalBean.processSomeLinkages(sent, opts);
             }
 
         }
+        while(orderCounter != myNum){
 
+        }
+        System.out.println(opts.outStream.toString("UTF8"));
+        orderCounter++;
     }
 
     /**

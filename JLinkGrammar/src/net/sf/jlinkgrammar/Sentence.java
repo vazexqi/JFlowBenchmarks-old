@@ -1573,8 +1573,7 @@ public class Sentence {
                 break;
         }
         if (lp == null) {
-            throw new RuntimeException(
-                    "A disjunct I inserted was not there. (1)");
+            throw new RuntimeException("A disjunct I inserted was not there. (1)");
         }
         /*
 		 * I don't know what these lines were for. I replaced them by the above

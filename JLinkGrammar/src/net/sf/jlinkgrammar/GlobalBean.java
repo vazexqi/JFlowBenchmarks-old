@@ -19,6 +19,7 @@ public class GlobalBean {
      * multiplied times the number of costly connectors on any disjunct must fit
      * into an integer.
      */
+
     public final static int NEGATIVECOST = -1000000;
     /**
      * no connector will have cost this high
@@ -358,18 +359,18 @@ public class GlobalBean {
         if (sent.numValidLinkages() > 0) {
             if (label == UNGRAMMATICAL) {
                 opts.out.println("error: parsed ungrammatical sentence");
-                batchErrors.getAndIncrement();
+               // batchErrors.getAndIncrement();
                 return UNGRAMMATICAL;
             }
             if ((sent.disjunctCost(0) == 0) && (label == PARSE_WITH_DISJUNCT_COST_GT_0)) {
                 opts.out.println("error: cost=0");
-                batchErrors.getAndIncrement();
+//                batchErrors.getAndIncrement();
                 return PARSE_WITH_DISJUNCT_COST_GT_0;
             }
         } else {
             if (label != UNGRAMMATICAL) {
                 opts.out.println("error: failed");
-                batchErrors.getAndIncrement();
+//                batchErrors.getAndIncrement();
                 return UNGRAMMATICAL;
             }
         }
