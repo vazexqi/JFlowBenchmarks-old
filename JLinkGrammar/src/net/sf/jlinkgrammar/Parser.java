@@ -59,17 +59,15 @@ public class Parser {
         opts.setLinkageLimit(1000);
         opts.setShortLength(10);
 
-        for (i=0; i < arg.length; i++) {
+        for (i = 0; i < arg.length; i++) {
             if (arg[i].charAt(0) == '-') {
                 if (arg[i].equals("-pp")) {
-                    if ((post_process_knowledge_file != null)
-                            || (i + 1 == arg.length))
+                    if ((post_process_knowledge_file != null) || (i + 1 == arg.length))
                         printUsage();
                     post_process_knowledge_file = arg[i + 1];
                     i++;
                 } else if (arg[i].equals("-c")) {
-                    if ((constituent_knowledge_file != null)
-                            || (i + 1 == arg.length))
+                    if ((constituent_knowledge_file != null) || (i + 1 == arg.length))
                         printUsage();
                     constituent_knowledge_file = arg[i + 1];
                     i++;
@@ -109,7 +107,6 @@ public class Parser {
                     printUsage();
                 }
             } else {
-                // TODO - printUsage(arg[0]);
             }
         }
 
@@ -119,54 +116,39 @@ public class Parser {
         if (dictionary_file == null) {
             // dictionary_file = defaultDataDir + "/link/4.0.dict";
             dictionary_file = "4.0.dict";
-            // TODO: logging
-            System.err.println("No dictionary file specified.  Using "
-                    + dictionary_file + ".");
+            System.err.println("No dictionary file specified.  Using " + dictionary_file + ".");
         }
 
         if (af_on && affix_file == null) {
             // affix_file = defaultDataDir + "/link/4.0.affix";
             affix_file = "4.0.affix";
-            // TODO: logging
-            System.err.println("No affix file specified.  Using " + affix_file
-                    + ".");
+            System.err.println("No affix file specified.  Using " + affix_file + ".");
         }
 
         if (pp_on && post_process_knowledge_file == null) {
             // post_process_knowledge_file = defaultDataDir +
             // "/link/4.0.knowledge";
             post_process_knowledge_file = "4.0.knowledge";
-            // TODO: logging
-            System.err
-                    .println("No post process knowledge file specified.  Using "
-                            + post_process_knowledge_file + ".");
+            System.err.println("No post process knowledge file specified.  Using " + post_process_knowledge_file + ".");
         }
 
         if (cons_on && constituent_knowledge_file == null) {
             // constituent_knowledge_file = defaultDataDir +
             // "/link/4.0.constituent-knowledge";
             constituent_knowledge_file = "4.0.constituent-knowledge";
-            // TODO: logging
-            System.err
-                    .println("No constituent knowledge file specified.  Using "
-                            + constituent_knowledge_file + ".");
+            System.err.println("No constituent knowledge file specified.  Using " + constituent_knowledge_file + ".");
         }
 
         try {
-            dict = new Dictionary(opts, dictionary_file,
-                    post_process_knowledge_file, constituent_knowledge_file,
-                    affix_file);
+            dict = new Dictionary(opts, dictionary_file, post_process_knowledge_file, constituent_knowledge_file, affix_file);
         } catch (IOException ex) {
-            // TODO - Do something
         }
 
         /* process the command line like commands */
         for (i = 1; i < arg.length; i++) {
-            if (!arg[i].equals("-pp") && !arg[i].equals("-c")
-                    && !arg[i].equals("-a")) {
+            if (!arg[i].equals("-pp") && !arg[i].equals("-c") && !arg[i].equals("-a")) {
                 i++;
-            } else if (arg[i].charAt(0) == '-' && !arg[i].equals("-ppoff")
-                    && !arg[i].equals("-coff") && !arg[i].equals("-aoff")) {
+            } else if (arg[i].charAt(0) == '-' && !arg[i].equals("-ppoff") && !arg[i].equals("-coff") && !arg[i].equals("-aoff")) {
                 opts.issueSpecialCommand(arg[i].substring(1), dict);
             }
         }
@@ -331,9 +313,9 @@ public class Parser {
       */
 
     static void printUsage() {
-        System.err .println("Usage: <class name> [dict_file] [-pp PPKnowledge_file]\n"
-                        + "          [-c constituent_knowledge_file] [-a affix_file]\n"
-                        + "          [-ppoff] [-coff] [-aoff] [-batch] [-<special \"!\" command>]");
+        System.err.println("Usage: <class name> [dict_file] [-pp PPKnowledge_file]\n"
+                + "          [-c constituent_knowledge_file] [-a affix_file]\n"
+                + "          [-ppoff] [-coff] [-aoff] [-batch] [-<special \"!\" command>]");
         System.exit(1);
     }
 }
