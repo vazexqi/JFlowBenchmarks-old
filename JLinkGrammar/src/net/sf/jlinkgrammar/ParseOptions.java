@@ -208,8 +208,6 @@ public class ParseOptions {
      * </ul>
      */
     public ParseOptions() {
-
-        // verbosity = 5;
         verbosity = 0;
         linkage_limit = 100;
         disjunct_cost = GlobalBean.MAX_DISJUNCT_COST;

@@ -29,9 +29,7 @@ public class Parser {
     private static boolean pp_on = true;
     private static boolean af_on = true;
     private static boolean cons_on = true;
-    private static int num_linkages;
-    private static StringBuffer input_string = new StringBuffer();
-    private static int label = GlobalBean.NOT_LABEL;
+
     private static ParseOptions opts;
 
     /**
@@ -162,14 +160,24 @@ public class Parser {
            * This is the standard command line parser reading from the standard
            * input and displaying on the standard output.
            */
+
+        int num_linkages;
+        StringBuffer input_string = new StringBuffer();
+        int label = GlobalBean.NOT_LABEL;
+
         while (GlobalBean.fgetInputString(input_string, opts.input, opts.out, opts)) {
+            // TODO: How to handle the case where we have to skip?
             if (input_string.length() == 0) {
                 continue;
             }
+
+            // TODO: How to handle the case where we break out of the loop?
             if (input_string.equals("quit\n") || input_string.equals("exit\n"))
                 break;
+
             if (GlobalBean.specialCommand(input_string, dict))
                 continue;
+
             if (opts.getEchoOn()) {
                 opts.out.println(input_string);
             }
@@ -206,7 +214,7 @@ public class Parser {
                 if (opts.getAllowNull()) {
                     opts.setMinNullCount(1);
                     opts.setMaxNullCount(sent.sentenceLength());
-                    num_linkages = sent.sentenceParse(opts);
+                    sent.sentenceParse(opts);
                 }
             }
 
