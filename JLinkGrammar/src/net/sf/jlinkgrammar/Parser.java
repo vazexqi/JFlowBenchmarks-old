@@ -59,23 +59,23 @@ public class Parser {
         opts.setLinkageLimit(1000);
         opts.setShortLength(10);
 
-        for (; i < arg.length; i++) {
+        for (i=0; i < arg.length; i++) {
             if (arg[i].charAt(0) == '-') {
                 if (arg[i].equals("-pp")) {
                     if ((post_process_knowledge_file != null)
                             || (i + 1 == arg.length))
-                        print_usage(arg[0]);
+                        printUsage();
                     post_process_knowledge_file = arg[i + 1];
                     i++;
                 } else if (arg[i].equals("-c")) {
                     if ((constituent_knowledge_file != null)
                             || (i + 1 == arg.length))
-                        print_usage(arg[0]);
+                        printUsage();
                     constituent_knowledge_file = arg[i + 1];
                     i++;
                 } else if (arg[i].equals("-a")) {
                     if ((affix_file != null) || (i + 1 == arg.length))
-                        print_usage(arg[0]);
+                        printUsage();
                     affix_file = arg[i + 1];
                     i++;
                 } else if (arg[i].equals("-ppoff")) {
@@ -86,7 +86,7 @@ public class Parser {
                     af_on = false;
                 } else if (arg[i].equals("-batch")) {
                     if ((opts.input != System.in) || (i + 1 == arg.length))
-                        print_usage(arg[0]);
+                        printUsage();
                     try {
                         opts.input = new FileInputStream(arg[i + 1]);
                     } catch (IOException ex) {
@@ -96,7 +96,7 @@ public class Parser {
 
                 } else if (arg[i].equals("-out")) {
                     if ((opts.out != System.out) || (i + 1 == arg.length))
-                        print_usage(arg[0]);
+                        printUsage();
                     try {
                         opts.out = new PrintStream(new FileOutputStream(
                                 arg[i + 1]));
@@ -106,15 +106,15 @@ public class Parser {
                     i++;
                 } else if (arg[i].charAt(1) == '!') {
                 } else {
-                    print_usage(arg[0]);
+                    printUsage();
                 }
             } else {
-                // TODO - print_usage(arg[0]);
+                // TODO - printUsage(arg[0]);
             }
         }
 
         if (!pp_on && post_process_knowledge_file != null)
-            print_usage(arg[0]);
+            printUsage();
 
         if (dictionary_file == null) {
             // dictionary_file = defaultDataDir + "/link/4.0.dict";
@@ -330,9 +330,8 @@ public class Parser {
       * dictionary_delete(dict); parse_options_delete(opts); return 0; }
       */
 
-    static void print_usage(String str) {
-        System.err
-                .println("Usage: <class name> [dict_file] [-pp PPKnowledge_file]\n"
+    static void printUsage() {
+        System.err .println("Usage: <class name> [dict_file] [-pp PPKnowledge_file]\n"
                         + "          [-c constituent_knowledge_file] [-a affix_file]\n"
                         + "          [-ppoff] [-coff] [-aoff] [-batch] [-<special \"!\" command>]");
         System.exit(1);
