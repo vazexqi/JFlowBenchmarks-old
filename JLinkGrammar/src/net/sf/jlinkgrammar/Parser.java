@@ -41,10 +41,10 @@ public class Parser {
         String[] args = new String[1];
 
         args[0] = new String("parseit");
-        InitializeVars(args);
+        initializeVars(args);
     }
 
-    public static void InitializeVars(String arg[]) {
+    public static void initializeVars(String arg[]) {
 
         int i = 0;
         if (arg.length > 1 && (arg[0].charAt(0) != '-')) {
@@ -54,7 +54,6 @@ public class Parser {
         }
         opts = new ParseOptions();
         GlobalBean.opts = opts;
-        // opts = new ParseOptions();
 
         opts.setMaxSentenceLength(70);
         opts.setLinkageLimit(1000);
@@ -176,7 +175,7 @@ public class Parser {
 
     public static void doIt(String arg[]) throws IOException {
 
-        InitializeVars(arg);
+        initializeVars(arg);
 
         /*
            * This is the standard command line parser reading from the standard
