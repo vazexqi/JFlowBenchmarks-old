@@ -1362,8 +1362,7 @@ public class Linkage {
         if (num_subl > GlobalBean.MAXSUBL) {
             num_subl = GlobalBean.MAXSUBL;
             if (opts.verbosity >= 2)
-                opts.out.println("Number of sublinkages exceeds maximum: only considering first "
-                        + GlobalBean.MAXSUBL + " sublinkages");
+                opts.out.println("Number of sublinkages exceeds maximum: only considering first " + GlobalBean.MAXSUBL + " sublinkages");
         }
         if (unionized && num_subl > 1)
             num_subl--;
@@ -1381,8 +1380,7 @@ public class Linkage {
         return q;
     }
 
-    private int add_constituent(int cons, Domain domain, int l, int r,
-                                String name) {
+    private int add_constituent(int cons, Domain domain, int l, int r, String name) {
         int c = cons;
         c++;
 
@@ -1931,8 +1929,7 @@ public class Linkage {
             }
 
             c--;
-            c = add_constituent(c, domain, leftmost, rightmost,
-                    cons_of_domain(domain.type));
+            c = add_constituent(c, domain, leftmost, rightmost, cons_of_domain(domain.type));
 
             if (domain.type == 'z') {
                 c = add_constituent(c, domain, leftmost, rightmost, "S");
@@ -1940,45 +1937,35 @@ public class Linkage {
             if (domain.type == 'c') {
                 c = add_constituent(c, domain, leftmost, rightmost, "S");
             }
-            if (Postprocessor.post_process_match("Ce*",
-                    constituent[c].start_link)
-                    || Postprocessor.post_process_match("Rn",
-                    constituent[c].start_link)) {
+            if (Postprocessor.post_process_match("Ce*", constituent[c].start_link)
+                    || Postprocessor.post_process_match("Rn", constituent[c].start_link)) {
                 c = add_constituent(c, domain, leftmost, rightmost, "SBAR");
             }
-            if (Postprocessor.post_process_match("R*",
-                    constituent[c].start_link)
-                    || Postprocessor.post_process_match("MX#r",
-                    constituent[c].start_link)) {
+            if (Postprocessor.post_process_match("R*", constituent[c].start_link)
+                    || Postprocessor.post_process_match("MX#r", constituent[c].start_link)) {
                 w = leftmost;
                 if (word[w].equals(","))
                     w++;
                 c = add_constituent(c, domain, w, w, "WHNP");
             }
-            if (Postprocessor.post_process_match("Mj",
-                    constituent[c].start_link)) {
+            if (Postprocessor.post_process_match("Mj", constituent[c].start_link)) {
                 w = leftmost;
                 if (word[w].equals(","))
                     w++;
                 c = add_constituent(c, domain, w, w + 1, "WHPP");
                 c = add_constituent(c, domain, w + 1, w + 1, "WHNP");
             }
-            if (Postprocessor.post_process_match("Ss#d",
-                    constituent[c].start_link)
-                    || Postprocessor.post_process_match("B#d",
-                    constituent[c].start_link)) {
+            if (Postprocessor.post_process_match("Ss#d", constituent[c].start_link)
+                    || Postprocessor.post_process_match("B#d", constituent[c].start_link)) {
                 c = add_constituent(c, domain, rootleft, rootleft, "WHNP");
-                c = add_constituent(c, domain, rootleft,
-                        constituent[c - 1].right, "SBAR");
+                c = add_constituent(c, domain, rootleft, constituent[c - 1].right, "SBAR");
             }
-            if (Postprocessor.post_process_match("CP",
-                    constituent[c].start_link)) {
+            if (Postprocessor.post_process_match("CP", constituent[c].start_link)) {
                 if (word[leftmost].equals(","))
                     constituent[c].left++;
                 c = add_constituent(c, domain, 1, num_words - 1, "S");
             }
-            if (Postprocessor.post_process_match("MVs",
-                    constituent[c].start_link) || (domain.type == 'f')) {
+            if (Postprocessor.post_process_match("MVs", constituent[c].start_link) || (domain.type == 'f')) {
                 w = constituent[c].left;
                 if (word[w].equals(","))
                     w++;
@@ -1989,12 +1976,9 @@ public class Linkage {
             if (domain.type == 't') {
                 c = add_constituent(c, domain, leftmost, rightmost, "S");
             }
-            if (Postprocessor.post_process_match("QI",
-                    constituent[c].start_link)
-                    || Postprocessor.post_process_match("Mr",
-                    constituent[c].start_link)
-                    || Postprocessor.post_process_match("MX#d",
-                    constituent[c].start_link)) {
+            if (Postprocessor.post_process_match("QI", constituent[c].start_link)
+                    || Postprocessor.post_process_match("Mr", constituent[c].start_link)
+                    || Postprocessor.post_process_match("MX#d", constituent[c].start_link)) {
                 w = leftmost;
                 if (word[w].equals(","))
                     w++;
@@ -2013,8 +1997,7 @@ public class Linkage {
                     /* Now find the finite verb to the right, start an S */
                     /* PV* limited w2 to sentence len */
                     for (w2 = w + 1; w2 < r_limit - 1; w2++)
-                        if ((wordtype[w2] == GlobalBean.WType_STYPE)
-                                || (wordtype[w2] == GlobalBean.WType_PTYPE))
+                        if ((wordtype[w2] == GlobalBean.WType_STYPE) || (wordtype[w2] == GlobalBean.WType_PTYPE))
                             break;
                     /* adjust the right boundary of previous constituent */
                     constituent[c].right = w2 - 1;
@@ -2074,8 +2057,7 @@ public class Linkage {
 
         adjust_subordinate_clauses(numcon_total, numcon_subl);
         for (c = numcon_total; c < numcon_total + numcon_subl; c++) {
-            if ((constituent[c].domain_type == 'p')
-                    && (word[constituent[c].left].equals(","))) {
+            if ((constituent[c].domain_type == 'p') && (word[constituent[c].left].equals(","))) {
                 constituent[c].left++;
             }
         }
@@ -2090,34 +2072,27 @@ public class Linkage {
             adjustment_made = 0;
             for (c = numcon_total; c < numcon_total + numcon_subl; c++) {
                 for (c2 = numcon_total; c2 < numcon_total + numcon_subl; c2++) {
-                    if ((constituent[c].left < constituent[c2].left)
-                            && (constituent[c].right < constituent[c2].right)
-                            && (constituent[c].right >= constituent[c2].left)) {
-
+                    if ((constituent[c].left < constituent[c2].left) && (constituent[c].right < constituent[c2].right) && (constituent[c].right >= constituent[c2].left)) {
                         /*
                                * We've found two overlapping constituents. If one is
                                * larger, except the smaller one includes an extra
                                * comma, adjust the smaller one to exclude the comma
                                */
 
-                        if ((word[constituent[c2].right].equals(","))
-                                || (word[constituent[c2].right]
+                        if ((word[constituent[c2].right].equals(",")) || (word[constituent[c2].right]
                                 .equals("RIGHT-WALL"))) {
                             if (opts.verbosity >= 2)
-                                opts.out.println("Adjusting " + c2
-                                        + " to fix comma overlap");
+                                opts.out.println("Adjusting " + c2 + " to fix comma overlap");
                             adjust_for_right_comma(c2);
                             adjustment_made = 1;
                         } else if (word[constituent[c].left].equals(",")) {
                             if (opts.verbosity >= 2)
-                                opts.out.println("Adjusting c " + c
-                                        + " to fix comma overlap");
+                                opts.out.println("Adjusting c " + c + " to fix comma overlap");
                             adjust_for_left_comma(c);
                             adjustment_made = 1;
                         } else {
                             if (opts.verbosity >= 2) {
-                                opts.out.println("WARNING: the constituents aren't nested! Adjusting them.("
-                                        + c + ", " + c2 + ")");
+                                opts.out.println("WARNING: the constituents aren't nested! Adjusting them.(" + c + ", " + c2 + ")");
                             }
                             constituent[c].left = constituent[c2].left;
                         }

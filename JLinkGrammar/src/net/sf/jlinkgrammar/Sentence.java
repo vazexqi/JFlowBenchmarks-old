@@ -4612,7 +4612,6 @@ public class Sentence {
      * @return the number of valid linkages
      */
     public int numValidLinkages() {
-
         return num_valid_linkages;
     }
 

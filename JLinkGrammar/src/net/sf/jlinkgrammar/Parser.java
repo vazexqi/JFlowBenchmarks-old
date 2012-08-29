@@ -88,7 +88,6 @@ public class Parser {
                     try {
                         opts.input = new FileInputStream(arg[i + 1]);
                     } catch (IOException ex) {
-                        // TODO - Do something
                     }
                     i++;
 
@@ -163,8 +162,7 @@ public class Parser {
            * This is the standard command line parser reading from the standard
            * input and displaying on the standard output.
            */
-        while (GlobalBean.fgetInputString(input_string, opts.input, opts.out,
-                opts)) {
+        while (GlobalBean.fgetInputString(input_string, opts.input, opts.out, opts)) {
             if (input_string.length() == 0) {
                 continue;
             }
@@ -181,8 +179,8 @@ public class Parser {
             }
 
             sent = new Sentence(input_string.toString(), dict, opts);
-            if (sent.sentenceLength() > opts
-                    .getMaxSentenceLength()) {
+
+            if (sent.sentenceLength() > opts.getMaxSentenceLength()) {
                 if (opts.verbosity > 0) {
                     opts.out.println("Sentence length ("
                             + sent.sentenceLength()
@@ -191,25 +189,28 @@ public class Parser {
                             + " words)");
                 }
                 continue;
-            } /* First parse with cost 0 or 1 and no null links */
+            }
+
+            /* First parse with cost 0 or 1 and no null links */
             opts.setDisjunctCost(2);
             opts.setMinNullCount(0);
             opts.setMaxNullCount(0);
             opts.resetResources();
             num_linkages = sent.sentenceParse(opts);
+
             /* Now parse with null links */
             if (num_linkages == 0 && !opts.getBatchMode()) {
                 if (opts.verbosity > 0)
                     opts.out.println("No complete linkages found.");
                 if (opts.getAllowNull()) {
                     opts.setMinNullCount(1);
-                    opts.setMaxNullCount(sent
-                            .sentenceLength());
+                    opts.setMaxNullCount(sent .sentenceLength());
                     num_linkages = sent.sentenceParse(opts);
                 }
             }
 
-            opts.printTotalTime();
+            //@OUTPUT
+            //opts.printTotalTime();
             if (opts.getBatchMode()) {
                 GlobalBean.batchProcessSomeLinkages(label, sent, opts);
             } else {

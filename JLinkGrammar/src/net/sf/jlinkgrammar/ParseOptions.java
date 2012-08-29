@@ -379,12 +379,10 @@ public class ParseOptions {
         return display_postscript;
     }
 
-    public void setDisplayConstituents(ParseOptions opts,
-                                       int dummy) {
+    public void setDisplayConstituents(ParseOptions opts, int dummy) {
         if ((dummy < 0) || (dummy > 2)) {
             System.err.println("Possible values for constituents: ");
-            System.err
-                    .println("   0 (no display) 1 (treebank style) or 2 (flat tree)");
+            System.err .println("   0 (no display) 1 (treebank style) or 2 (flat tree)");
             display_constituents = 0;
         } else
             display_constituents = dummy;

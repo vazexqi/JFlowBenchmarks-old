@@ -33,10 +33,8 @@ public class Resources {
         long currentTime = new Date().getTime();
         if (opts.verbosity > 1) {
             opts.out.print("++++");
-            opts.leftPrintString(s,
-                    "                                           ");
-            opts.out.println("" + ((currentTime - lastTime) / 1000.0)
-                    + " seconds");
+            opts.leftPrintString(s, "                                           ");
+            opts.out.println("" + ((currentTime - lastTime) / 1000.0) + " seconds");
         }
         lastTime = currentTime;
     }
