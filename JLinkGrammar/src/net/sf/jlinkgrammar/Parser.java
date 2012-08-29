@@ -198,13 +198,14 @@ public class Parser {
             opts.resetResources();
             num_linkages = sent.sentenceParse(opts);
 
-            /* Now parse with null links */
-            if (num_linkages == 0 && !opts.getBatchMode()) {
+            // Now parse with null links
+            // Even in Batch mode
+            if (num_linkages == 0) {
                 if (opts.verbosity > 0)
                     opts.out.println("No complete linkages found.");
                 if (opts.getAllowNull()) {
                     opts.setMinNullCount(1);
-                    opts.setMaxNullCount(sent .sentenceLength());
+                    opts.setMaxNullCount(sent.sentenceLength());
                     num_linkages = sent.sentenceParse(opts);
                 }
             }

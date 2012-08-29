@@ -342,7 +342,8 @@ public class GlobalBean {
     }
 
     public static void batchProcessSomeLinkages(int label, Sentence sent, ParseOptions opts) {
-        if (sent.numValidLinkages() > 0 && sent.numLinkagesFound() > 0) {
+        if (sent.numLinkagesPostProcess() > 0) {
+            // Always print the first Linkage found (good or bad)
             Linkage linkage = new Linkage(0, sent, opts);
             linkage.process_linkage(opts);
         }
