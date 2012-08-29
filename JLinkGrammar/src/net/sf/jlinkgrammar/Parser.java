@@ -179,61 +179,6 @@ public class Parser {
         InitializeVars(arg);
 
         /*
-           * This section is a simple example of the API for those trying to
-           * figure out how to incorporate it into their own program. Un-comment
-           * it to see the results
-           */
-        {
-            String testString = "Which camera is small?"; // a simple test
-            // sentence
-            String testString2 = "Which camera is best?"; // a simple test
-            // sentence with a
-            // null
-            int rWordIndex;
-            int lWordIndex;
-            String leftWord;
-            String rightWord;
-            String linkLabel;
-
-            // Set up a quick test
-            sent = new Sentence(testString, dict, opts);
-            // First parse with cost 0 or 1 and no null links
-            opts.setDisjunctCost(2);
-            opts.setMinNullCount(0);
-            opts.setMaxNullCount(0);
-            opts.resetResources();
-            num_linkages = sent.sentenceParse(opts);
-            if (num_linkages == 0) {
-                // O.K. we have a null link (i.e. word without a link)
-                // so allow one and try again
-                opts.setMinNullCount(1);
-                opts.setMaxNullCount(sent.sentenceLength());
-                num_linkages = sent.sentenceParse(opts);
-            }
-
-            /*
-                * This is an example of the API uncomment it to see it work. //
-                * Normally you loop over linkages, here we only choose the first
-                * Linkage myLinkage = new Linkage(0, sent, opts); // Normally you
-                * loop through sublinkages int n =
-                * myLinkage.linkage_get_num_sublinkages(); // Only choose the first
-                * sublinkage myLinkage.linkage_set_current_sublinkage(0); int
-                * numLinks = myLinkage.linkage_get_num_links();
-                *
-                * for (int linkIndex = 0; linkIndex < numLinks; linkIndex++) {
-                * rWordIndex = myLinkage.linkage_get_link_rword(linkIndex);
-                * lWordIndex = myLinkage.linkage_get_link_lword(linkIndex);
-                * rightWord = myLinkage.word[rWordIndex]; leftWord =
-                * myLinkage.word[lWordIndex]; linkLabel =
-                * myLinkage.linkage_get_link_label(linkIndex);
-                * opts.out.println(leftWord + "---" + linkLabel + "---" +
-                * rightWord);
-                *
-                * }
-                */
-        }
-
-        /*
            * This is the standard command line parser reading from the standard
            * input and displaying on the standard output.
            */
